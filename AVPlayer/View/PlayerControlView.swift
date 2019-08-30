@@ -11,18 +11,28 @@ import UIKit
 @IBDesignable
 class PlayerControlView: UIView {
 
+    @IBOutlet weak var playButton: UIButton!
+    @IBOutlet weak var forwardButton: UIButton!
+    @IBOutlet weak var rewindButton: UIButton!
+    @IBOutlet weak var currentimLabel: UILabel!
+    @IBOutlet weak var totalTimeLabel: UILabel!
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         
+        xibSetUp()
     }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        
+        xibSetUp()
     }
     
     override func prepareForInterfaceBuilder() {
         super.prepareForInterfaceBuilder()
         
+        xibSetUp()
     }
     
     func xibSetUp() {
@@ -37,6 +47,30 @@ class PlayerControlView: UIView {
             
             print("error:\(error)")
         }
+        
+    }
+    
+    @IBAction func playAction(_ sender: Any) {
+        print("playAction")
+    }
+    
+    @IBAction func fastForwardAction(_ sender: Any) {
+        
+        print("fastForwardAction")
+    }
+    
+    @IBAction func rewindAction(_ sender: Any) {
+        print("rewindAction")
+    }
+    
+    func updateCurrentTime(time:String) {
+        
+        currentimLabel.text = time
+    }
+    
+    func setTotalTime(time:String) {
+        
+        totalTimeLabel.text = time
         
     }
     

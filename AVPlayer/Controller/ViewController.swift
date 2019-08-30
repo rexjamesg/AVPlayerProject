@@ -10,115 +10,46 @@ import UIKit
 import AVKit
 import AVFoundation
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, AVPlayerViewDelegate {
+
+    var player:AVPlayerView = AVPlayerView()
     
-    @IBOutlet weak var playerControlView: PlayerControlView!
-    
-    var player : AVPlayer?
-    var avPlayerLayer : AVPlayerLayer!
-    var playerItem:AVPlayerItem?
-    var asset:AVURLAsset!
-    var isPlaying:Bool = false
-    
-    @IBOutlet weak var timeSlider: UISlider!
-    
-    @IBOutlet weak var progressView: UIProgressView!
+    var playerControl:PlayerControlView = PlayerControlView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         
-        setPlayer(urlSting: "https://bit.ly/2Zsq1uE")
-    }
-    
-    func setPlayer(urlSting:String) {
+        let width:CGFloat = view.frame.size.width
+        let height:CGFloat = view.frame.size.height/16*9
         
-        let videoURL =  URL(string: urlSting)!
+        player = AVPlayerView.init(frame: CGRect.init(x: 0, y: 0, width: width, height: height))
         
+        player.center = view.center
         
-        //定义一个视频文件路径
-        //let filePath = Bundle.main.path(forResource: "hangge", ofType: "mp4")
-        //let videoURL = URL(fileURLWithPath: filePath!)
-        //定义一个playerItem，并监听相关的通知
-        playerItem = AVPlayerItem(url: videoURL)
+        player.delegate = self
         
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(playerDidFinishPlaying),
-                                               name: NSNotification.Name.AVPlayerItemDidPlayToEndTime,
-                                               object: playerItem)
+        view.addSubview(player)
         
-        //定义一个视频播放器，通过playerItem径初始化
-        player = AVPlayer(playerItem: playerItem)
-        //設定大小和位置（全螢幕）
-        let playerLayer = AVPlayerLayer(player: player)
-        playerLayer.frame = self.view.bounds
-        //加到介面
-        self.view.layer.addSublayer(playerLayer)
-        //開始播放
-        player?.play()
-        
-        print("play")
-        
-        addVideoObserver()
-        
-        updatePlayerUI()
+        player.setPlayer(urlSting: "https://r7---sn-ipoxu-umb6.googlevideo.com/videoplayback?expire=1567159061&ei=tZ5oXYKdGcuG1wLDjrvgAg&ip=178.162.205.105&id=o-AOUFiwf6_Y9WEMVxSnra5B9XxwgnRynVSRXoPPVOonGC&itag=18&source=youtube&requiressl=yes&mime=video%2Fmp4&gir=yes&clen=19038954&ratebypass=yes&dur=323.268&lmt=1543876827640707&fvip=5&c=WEB&txp=5531432&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cmime%2Cgir%2Cclen%2Cratebypass%2Cdur%2Clmt&sig=ALgxI2wwRQIhAPtHwSKMb8b5zivIvBFcjnN6iFv4KckdXYF5twrFXcIhAiBgDG4YY01nNbXCUK8J53jr1hLa8bMQz54zmQDqrEjZjA==&title=Eminem_-_Lose_Yourself_[HD]&cms_redirect=yes&mip=36.232.51.66&mm=31&mn=sn-ipoxu-umb6&ms=au&mt=1567137336&mv=m&mvi=6&pl=21&lsparams=mip,mm,mn,ms,mv,mvi,pl&lsig=AHylml4wRQIgT2bs_zglVaf_2OVjVm1W2sSSpP5seK8aLMjDpijt0t8CIQDMGimCJaq9x9VsHBDOGQ4TZkypcFDGGiH6HphWLsqP6w==")
         
         
-        view.bringSubviewToFront(playerControlView)
-    }
-    
-    func addVideoObserver() {
-        
-        player?.addPeriodicTimeObserver(forInterval: CMTimeMake(value: 1, timescale: 1), queue: DispatchQueue.main, using: { (CMTime) in
-            
-            if self.player!.currentItem?.status == .readyToPlay {
-                
-                let currentTime = CMTimeGetSeconds(self.player!.currentTime())
-                
-                print("currentTime",self.formatConversion(time: currentTime))
-                
-                self.timeSlider.value = Float(currentTime)
-                
-                //self.currentTimeLabel.text = self.formatConversion(time: currentTime)
-                
-            }
-        })
-        
-    }
-    
-    func updatePlayerUI() {
-        // 抓取 playItem 的 duration
-        let duration = playerItem!.asset.duration
-        // 把 duration 轉為我們歌曲的總時間（秒數）。
-        let seconds = CMTimeGetSeconds(duration)
-        
-        print("seconds",seconds)
-        
-        print("total",formatConversion(time: seconds))
+        let playerControlView:PlayerControlView = PlayerControlView.init(frame: CGRect.init(x: 0, y: 0, width: width, height: height))
         
         
-        // 把我們的歌曲總時長顯示到我們的 Label 上。
-        //songLengthLabel.text = formatConversion(time: seconds)
-        timeSlider.minimumValue = 0
-        // 更新 Slider 的 maximumValue。
-        timeSlider!.maximumValue = Float(seconds)
-        // 這裡看個人需求，如果想要拖動後才更新進度，那就設為 false；如果想要直接更新就設為 true，預設為 true。
-        timeSlider!.isContinuous = true
+        player.addSubview(playerControlView)
+        
+        player.bringSubviewToFront(playerControlView)
         
     }
     
     func formatConversion(time:Float64) -> String {
         
-        let length = Int(time)
-        
-        let minutes = Int(length / 60) // 求 songLength 的商，為分鐘數
-        
-        let seconds = Int(length % 60) // 求 songLength 的餘數，為秒數
-        
+        let songLength = Int(time)
+        let minutes = Int(songLength / 60) // 求 songLength 的商，為分鐘數
+        let seconds = Int(songLength % 60) // 求 songLength 的餘數，為秒數
         var time = ""
-        
         if minutes < 10 {
-            
             time = "0\(minutes):"
         } else {
             time = "\(minutes)"
@@ -131,47 +62,43 @@ class ViewController: UIViewController {
         return time
     }
     
-    @objc func playerDidFinishPlaying() {
+    //MARK: ----- AVPlayerViewDelegate -----
+    func didUpdatePlayerCurrentTime(time: Float64) {
         
-        print("Finished")
+        let timeStr = self.formatConversion(time: time)
+        
+        playerControl.updateCurrentTime(time: timeStr)
+        
+        print("timeStr",timeStr)
+        
+        //self.timeSlider.value = Float(currentTime)
+        
+        //self.currentTimeLabel.text = self.formatConversion(time: currentTime)
     }
     
-    func playAndPause() {
+    func playerDidFinishPlaying() {
         
-        if isPlaying == false {
-            
-            //playButton.setImage(UIImage(named: "icons8-pause"), for:   UIControlState.normal)
-            
-            isPlaying = true
-            
-            player?.play()
-            
-            print("play")
-            
-        } else {
-            
-            //playButton.setImage(UIImage(named: "icons8-play"), for: UIControlState.normal)
-            
-            isPlaying = false
-            
-            player?.pause()
-            
-            print("pause")
-        }
+        print("finish")
     }
     
-    @IBAction func changeCurrentTime(_ sender: UISlider) {
-        
-        let seconds = Int64(timeSlider.value)
-        let targetTime:CMTime = CMTimeMake(value: seconds, timescale: 1)
-        // 將當前設置時間設為播放時間
-        player?.seek(to: targetTime)
+    func playerPlayAndPause(isPlaying: Bool) {
+                
+        print("isPlaying",isPlaying)
     }
     
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+    func receiveTotalDuration(time: Float64) {
         
-        playAndPause()
+        let timeStr = self.formatConversion(time: time)
+        
+        playerControl.setTotalTime(time: timeStr)
+        
+        //把我們的歌曲總時長顯示到我們的 Label 上。
+        //songLengthLabel.text = formatConversion(time: seconds)
+        //timeSlider.minimumValue = 0
+        // 更新 Slider 的 maximumValue。
+        //timeSlider!.maximumValue = Float(seconds)
+        // 這裡看個人需求，如果想要拖動後才更新進度，那就設為 false；如果想要直接更新就設為 true，預設為 true。
+        //timeSlider!.isContinuous = true
     }
-    
 }
 
