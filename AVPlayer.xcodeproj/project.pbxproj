@@ -14,6 +14,9 @@
 		D21F2F532318C28500F7BCF3 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D21F2F512318C28500F7BCF3 /* LaunchScreen.storyboard */; };
 		D21F2F5E2318C28500F7BCF3 /* AVPlayerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21F2F5D2318C28500F7BCF3 /* AVPlayerTests.swift */; };
 		D21F2F692318C28500F7BCF3 /* AVPlayerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21F2F682318C28500F7BCF3 /* AVPlayerUITests.swift */; };
+		D21F2F802318C41B00F7BCF3 /* UIViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21F2F7F2318C41B00F7BCF3 /* UIViewExtension.swift */; };
+		D21F2F832318C44600F7BCF3 /* PlayerControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21F2F812318C44600F7BCF3 /* PlayerControlView.swift */; };
+		D21F2F842318C44600F7BCF3 /* PlayerControlView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D21F2F822318C44600F7BCF3 /* PlayerControlView.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,6 +50,9 @@
 		D21F2F642318C28500F7BCF3 /* AVPlayerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AVPlayerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D21F2F682318C28500F7BCF3 /* AVPlayerUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVPlayerUITests.swift; sourceTree = "<group>"; };
 		D21F2F6A2318C28500F7BCF3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D21F2F7F2318C41B00F7BCF3 /* UIViewExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIViewExtension.swift; sourceTree = "<group>"; };
+		D21F2F812318C44600F7BCF3 /* PlayerControlView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlayerControlView.swift; sourceTree = "<group>"; };
+		D21F2F822318C44600F7BCF3 /* PlayerControlView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PlayerControlView.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -97,8 +103,11 @@
 		D21F2F472318C28400F7BCF3 /* AVPlayer */ = {
 			isa = PBXGroup;
 			children = (
+				D21F2F7B2318C36500F7BCF3 /* Helper */,
+				D21F2F7A2318C34B00F7BCF3 /* Controller */,
+				D21F2F792318C34700F7BCF3 /* View */,
+				D21F2F782318C33B00F7BCF3 /* Model */,
 				D21F2F482318C28400F7BCF3 /* AppDelegate.swift */,
-				D21F2F4A2318C28400F7BCF3 /* ViewController.swift */,
 				D21F2F4C2318C28400F7BCF3 /* Main.storyboard */,
 				D21F2F4F2318C28500F7BCF3 /* Assets.xcassets */,
 				D21F2F512318C28500F7BCF3 /* LaunchScreen.storyboard */,
@@ -123,6 +132,46 @@
 				D21F2F6A2318C28500F7BCF3 /* Info.plist */,
 			);
 			path = AVPlayerUITests;
+			sourceTree = "<group>";
+		};
+		D21F2F782318C33B00F7BCF3 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		D21F2F792318C34700F7BCF3 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				D21F2F812318C44600F7BCF3 /* PlayerControlView.swift */,
+				D21F2F822318C44600F7BCF3 /* PlayerControlView.xib */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		D21F2F7A2318C34B00F7BCF3 /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				D21F2F4A2318C28400F7BCF3 /* ViewController.swift */,
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
+		D21F2F7B2318C36500F7BCF3 /* Helper */ = {
+			isa = PBXGroup;
+			children = (
+				D21F2F7E2318C41100F7BCF3 /* Extension */,
+			);
+			path = Helper;
+			sourceTree = "<group>";
+		};
+		D21F2F7E2318C41100F7BCF3 /* Extension */ = {
+			isa = PBXGroup;
+			children = (
+				D21F2F7F2318C41B00F7BCF3 /* UIViewExtension.swift */,
+			);
+			path = Extension;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -232,6 +281,7 @@
 				D21F2F532318C28500F7BCF3 /* LaunchScreen.storyboard in Resources */,
 				D21F2F502318C28500F7BCF3 /* Assets.xcassets in Resources */,
 				D21F2F4E2318C28400F7BCF3 /* Main.storyboard in Resources */,
+				D21F2F842318C44600F7BCF3 /* PlayerControlView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -257,7 +307,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				D21F2F4B2318C28400F7BCF3 /* ViewController.swift in Sources */,
+				D21F2F832318C44600F7BCF3 /* PlayerControlView.swift in Sources */,
 				D21F2F492318C28400F7BCF3 /* AppDelegate.swift in Sources */,
+				D21F2F802318C41B00F7BCF3 /* UIViewExtension.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
