@@ -15,7 +15,8 @@ protocol AVPlayerViewDelegate:class {
     func didUpdatePlayerCurrentTime(time:Float64)
     func playerDidFinishPlaying()
     func playerPlayAndPause(isPlaying:Bool)
-    func receiveTotalDuration(time:Float64)
+    func didReceiveTotalDuration(time:Float64)
+    func didTouchPlayer()
 }
 
 class AVPlayerView: UIView {
@@ -27,6 +28,17 @@ class AVPlayerView: UIView {
     var playerItem:AVPlayerItem?
     var asset:AVURLAsset!
     var isPlaying:Bool = false
+
+    var currentSecond:Float64? {
+        
+        if let time = player?.currentItem?.currentTime() {
+            
+            return CMTimeGetSeconds(time)
+        }
+        
+        return nil
+        
+    }
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -38,6 +50,10 @@ class AVPlayerView: UIView {
         
     }
     
+    /**
+     初始化播放器
+     - Parameter urlString: 影片路徑、網址
+     */
     func setPlayer(urlSting:String) {
         
         let videoURL =  URL(string: urlSting)!
@@ -51,14 +67,13 @@ class AVPlayerView: UIView {
         
         player = AVPlayer(playerItem: playerItem)
         
-        let playerLayer = AVPlayerLayer(player: player)
-        playerLayer.frame = self.bounds
+        avPlayerLayer = AVPlayerLayer(player: player)
         
-        self.layer.addSublayer(playerLayer)
+        avPlayerLayer.frame = self.bounds
         
-        player?.play()
+        self.layer.addSublayer(avPlayerLayer)
         
-        print("play")
+        play()
         
         addVideoObserver()
         
@@ -66,6 +81,14 @@ class AVPlayerView: UIView {
         
     }
     
+    ///直式橫式切換時，更新UI
+    func resizeSubViews() {
+        
+        avPlayerLayer.frame = self.bounds
+
+    }
+    
+    ///增加播放進度監聽
     func addVideoObserver() {
         
         player?.addPeriodicTimeObserver(forInterval: CMTimeMake(value: 1, timescale: 1), queue: DispatchQueue.main, using: { (CMTime) in
@@ -76,108 +99,104 @@ class AVPlayerView: UIView {
                 
                 self.delegate?.didUpdatePlayerCurrentTime(time: currentTime)
                 
-                //self.formatConversion(time: currentTime)
-                
-                //self.timeSlider.value = Float(currentTime)
-                
-                //self.currentTimeLabel.text = self.formatConversion(time: currentTime)
-                
             }
         })
-        
     }
     
-    func updatePlayerUI() {
+    ///取得影片長度
+    private func updatePlayerUI() {
         
         // 抓取 playItem 的 duration
         let duration = playerItem!.asset.duration
         // 把 duration 轉為我們歌曲的總時間（秒數）。
         let seconds = CMTimeGetSeconds(duration)
-        
-        //print("seconds",seconds)
-        
-        //print("total",formatConversion(time: seconds))
-        
-        delegate?.receiveTotalDuration(time:seconds)
-        
-        
-        
-        // 把我們的歌曲總時長顯示到我們的 Label 上。
-        //songLengthLabel.text = formatConversion(time: seconds)
-        //timeSlider.minimumValue = 0
-        // 更新 Slider 的 maximumValue。
-        //timeSlider!.maximumValue = Float(seconds)
-        // 這裡看個人需求，如果想要拖動後才更新進度，那就設為 false；如果想要直接更新就設為 true，預設為 true。
-        //timeSlider!.isContinuous = true
-        
+
+        delegate?.didReceiveTotalDuration(time: seconds)
     }
     
-    func formatConversion(time:Float64) -> String {
-        
-        let length = Int(time)
-        
-        let minutes = Int(length / 60) // 求 songLength 的商，為分鐘數
-        
-        let seconds = Int(length % 60) // 求 songLength 的餘數，為秒數
-        
-        var time = ""
-        
-        if minutes < 10 {
-            
-            time = "0\(minutes):"
-        } else {
-            time = "\(minutes)"
-        }
-        if seconds < 10 {
-            time += "0\(seconds)"
-        } else {
-            time += "\(seconds)"
-        }
-        return time
-    }
-    
+    ///影片播放完畢
     @objc func playerDidFinishPlaying() {
+        
+        pause()
         
         print("Finished")
     }
+    
     
     func playAndPause() {
         
         if isPlaying == false {
             
-            //playButton.setImage(UIImage(named: "icons8-pause"), for:   UIControlState.normal)
-            
-            isPlaying = true
-            
-            player?.play()
-            
-            print("play")
+            play()
             
         } else {
             
-            //playButton.setImage(UIImage(named: "icons8-play"), for: UIControlState.normal)
-            
-            isPlaying = false
-            
-            player?.pause()
-            
-            print("pause")
+            pause()
         }
         
         delegate?.playerPlayAndPause(isPlaying: isPlaying)
     }
     
-    @IBAction func changeCurrentTime(_ sender: UISlider) {
+    /**
+     
+     變更影片播放進度
+     
+     - Parameter time: 應變更的進度
+     */
+    func changeCurrentTime(time: Float) {
         
-        //let seconds = Int64(timeSlider.value)
-        //let targetTime:CMTime = CMTimeMake(value: seconds, timescale: 1)
+        let seconds = Int64(time)
+        
+        let targetTime:CMTime = CMTimeMake(value: seconds, timescale: 1)
+        
         // 將當前設置時間設為播放時間
-        //player?.seek(to: targetTime)
+        player?.seek(to: targetTime)
+        
+    }
+    
+    ///快轉
+    func fastForward() {
+     
+        if let time = currentSecond {
+            
+            changeCurrentTime(time: Float(time+5))
+        }
+
+    }
+    
+    ///回放
+    func rewind() {
+     
+        if let time = currentSecond {
+            
+            changeCurrentTime(time: Float(time-5))
+        }
+    }
+    
+    ///播放
+    func play() {
+        
+        isPlaying = true
+        
+        player?.play()
+        
+        print("play")
+    }
+    
+    ///暫停
+    func pause() {
+        
+        isPlaying = false
+        
+        player?.pause()
+        
+        print("pause")
+        
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         
-        playAndPause()
+        delegate?.didTouchPlayer()
     }
     
     /*
