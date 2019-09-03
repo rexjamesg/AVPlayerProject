@@ -10,8 +10,8 @@ import UIKit
 import AVKit
 import AVFoundation
 
-class ViewController: UIViewController, AVPlayerViewDelegate, PlayerControlViewDelegate {
-    
+class ViewController: BaseViewController, AVPlayerViewDelegate, PlayerControlViewDelegate {
+
     var player:AVPlayerView = AVPlayerView()
     
     var playerControlView:PlayerControlView = PlayerControlView()
@@ -28,16 +28,17 @@ class ViewController: UIViewController, AVPlayerViewDelegate, PlayerControlViewD
         
         player = AVPlayerView.init(frame: getResizedFrame())
         
-        player.center = view.center
+        //在影片讀取之前就要把控制UI實作
+        playerControlView = PlayerControlView.init(frame: getResizedFrame())
+        
+        //player.center = view.center
         
         player.delegate = self
         
         view.addSubview(player)
         
-        player.setPlayer(urlSting: "https://bit.ly/2kmfAKC")
+        player.setPlayer(urlSting: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4")
         
-        
-        playerControlView = PlayerControlView.init(frame: getResizedFrame())
         
         playerControlView.delegate = self
         
@@ -91,23 +92,29 @@ class ViewController: UIViewController, AVPlayerViewDelegate, PlayerControlViewD
     }
     
     //MARK: ----- AVPlayerViewDelegate -----
+    func playerDidReceiveFail() {
+    
+        presentAlert(title: "讀取失敗", message: nil, alertType: .Normal, handler: nil)
+    }
+    
     func didUpdatePlayerCurrentTime(time: Float64) {
         
         playerControlView.updateCurrentTime(time: time)
         
     }
     
-    ///播放完畢
+    func playerBufferProgress(currentTime: Float64, totalTime: Float64) {
+        
+        playerControlView.setProcessViewValue(current: currentTime, total: totalTime)
+        
+    }
+    
     func playerDidFinishPlaying() {
         
         print("finish")
         
     }
     
-    /**
-     開始與結束播放
-     - Parameter isPlaying: 是否正在播放
-     */
     func playerPlayAndPause(isPlaying: Bool) {
                 
         print("isPlaying",isPlaying)
@@ -115,10 +122,6 @@ class ViewController: UIViewController, AVPlayerViewDelegate, PlayerControlViewD
         playerControlView.setPlayButton(isPlaying: isPlaying)
     }
     
-    /**
-     接收到影片長度
-     - Parameter time: 影片長度
-     */
     func didReceiveTotalDuration(time: Float64) {
     
         print("didReceiveTotalDuration",time)
@@ -127,24 +130,21 @@ class ViewController: UIViewController, AVPlayerViewDelegate, PlayerControlViewD
     
     }
     
-    ///觸摸播放器圖層
+    
     func didTouchPlayer() {
         
         playerControlView.show()
     }
     
     //MARK: ----- PlayerControlViewDelegate -----
-    /**
-     變更播放進度
-     - Parameter value: 播放進度
-     */
     func didChangeCurrentTime(value: Float) {
+        
+        print("didChangeCurrentTime")
         
         player.changeCurrentTime(time: value)
         
     }
     
-    ///播放
     func playAction() {
         
         playerControlView.setPlayButton(isPlaying: player.isPlaying)
@@ -157,25 +157,24 @@ class ViewController: UIViewController, AVPlayerViewDelegate, PlayerControlViewD
             
             player.play()
         }
-        
-        
-        
     }
     
-    ///快轉
     func playerControlForward() {
         
         player.fastForward()
         
     }
-    
-    ///回放
+
     func playerControlRewind() {
         
         player.rewind()
     }
     
-    ///手動螢幕轉向
+    func didEndChangeSliderValue() {
+        
+        player.play()
+    }
+    
     func orientationAction() {
 
         var value:Int = UIInterfaceOrientation.landscapeLeft.rawValue

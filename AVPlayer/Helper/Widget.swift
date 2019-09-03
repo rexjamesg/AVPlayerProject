@@ -11,6 +11,10 @@ import UIKit
 
 class Widget: NSObject {
     
+    /**
+     影片時間轉為分:秒
+     - Parameter time: 要轉換的時間
+     */
     class func formatConversion(time:Float64) -> String {
         
         let length = Int(time)
@@ -20,23 +24,15 @@ class Widget: NSObject {
         var time = ""
         
         if minutes < 10 {
-            
             time = "0\(minutes):"
-            
         } else {
-            
             time = "\(minutes):"
-            
         }
         
         if seconds < 10 {
-            
             time += "0\(seconds)"
-            
         } else {
-            
             time += "\(seconds)"
-            
         }
         
         return time

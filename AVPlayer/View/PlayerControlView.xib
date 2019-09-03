@@ -18,6 +18,7 @@
                 <outlet property="forwardButton" destination="TFz-qN-Hy5" id="4UX-S6-r9Y"/>
                 <outlet property="orientationButton" destination="nSx-5g-ZwH" id="7XZ-m2-2Oi"/>
                 <outlet property="playButton" destination="yC7-pv-wXK" id="pkG-uX-N58"/>
+                <outlet property="playerProgressView" destination="Ulz-Ow-ZEX" id="OK9-4p-gIh"/>
                 <outlet property="rewindButton" destination="6nu-Yl-RHw" id="SiJ-co-lQF"/>
                 <outlet property="totalTimeLabel" destination="yLd-HK-Pwq" id="OCt-RP-JV1"/>
             </connections>
@@ -31,6 +32,13 @@
                     <rect key="frame" x="0.0" y="0.0" width="320" height="180"/>
                     <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                 </view>
+                <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Ulz-Ow-ZEX">
+                    <rect key="frame" x="58" y="161" width="174" height="2"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="2" id="mnf-03-plJ"/>
+                    </constraints>
+                    <color key="progressTintColor" red="0.52941176470588236" green="0.80784313725490198" blue="0.98039215686274506" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                </progressView>
                 <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="69" translatesAutoresizingMaskIntoConstraints="NO" id="jcf-a5-c0x">
                     <rect key="frame" x="46" y="75" width="228" height="30"/>
                     <subviews>
@@ -113,8 +121,14 @@
                 </label>
                 <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="jLd-bj-ENm">
                     <rect key="frame" x="56" y="146" width="178" height="31"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="30" id="brE-wn-7ap"/>
+                    </constraints>
+                    <color key="maximumTrackTintColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <connections>
-                        <action selector="currentTimeSliderAction:" destination="-1" eventType="valueChanged" id="BWT-Xz-hZ5"/>
+                        <action selector="currentTimeSliderAction:" destination="-1" eventType="valueChanged" id="iqp-fe-YSx"/>
+                        <action selector="sliderEndChangeInside:" destination="-1" eventType="touchUpInside" id="fBY-ub-8la"/>
+                        <action selector="sliderEndChangeOutside:" destination="-1" eventType="touchUpOutside" id="OuK-Ei-yhy"/>
                     </connections>
                 </slider>
             </subviews>
@@ -124,18 +138,21 @@
                 <constraint firstItem="nSx-5g-ZwH" firstAttribute="leading" secondItem="yLd-HK-Pwq" secondAttribute="trailing" constant="8" id="3KP-PM-YIw"/>
                 <constraint firstItem="jcf-a5-c0x" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="7y0-Jz-HvX"/>
                 <constraint firstAttribute="bottom" secondItem="0aC-Xl-p7a" secondAttribute="bottom" id="Az3-gR-8OV"/>
-                <constraint firstItem="jLd-bj-ENm" firstAttribute="leading" secondItem="T3r-cE-ddT" secondAttribute="trailing" constant="8" id="FzN-MT-nnO"/>
                 <constraint firstAttribute="bottom" secondItem="T3r-cE-ddT" secondAttribute="bottom" constant="10" id="GSE-2I-Bm3"/>
-                <constraint firstAttribute="bottom" secondItem="jLd-bj-ENm" secondAttribute="bottom" constant="4" id="Zef-sj-Qd5"/>
+                <constraint firstItem="Ulz-Ow-ZEX" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="58" id="Qg7-wz-wHt"/>
+                <constraint firstAttribute="trailing" secondItem="Ulz-Ow-ZEX" secondAttribute="trailing" constant="88" id="ROC-l1-NxN"/>
+                <constraint firstItem="jLd-bj-ENm" firstAttribute="leading" secondItem="T3r-cE-ddT" secondAttribute="trailing" constant="8" id="TPT-95-9Ff"/>
+                <constraint firstAttribute="bottom" secondItem="Ulz-Ow-ZEX" secondAttribute="bottom" constant="17" id="Zlq-V3-SQB"/>
                 <constraint firstAttribute="bottom" secondItem="yLd-HK-Pwq" secondAttribute="bottom" constant="10" id="aY4-rh-z9I"/>
                 <constraint firstItem="0aC-Xl-p7a" firstAttribute="trailing" secondItem="vUN-kp-3ea" secondAttribute="trailing" id="awE-33-n7n"/>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="jcf-a5-c0x" secondAttribute="trailing" constant="46" id="bVg-gw-11Y"/>
                 <constraint firstAttribute="bottom" secondItem="nSx-5g-ZwH" secondAttribute="bottom" constant="4" id="d1K-bX-YV6"/>
                 <constraint firstAttribute="trailing" secondItem="nSx-5g-ZwH" secondAttribute="trailing" constant="8" id="fgH-JR-eU6"/>
-                <constraint firstItem="yLd-HK-Pwq" firstAttribute="leading" secondItem="jLd-bj-ENm" secondAttribute="trailing" constant="8" id="i0L-ZR-LS3"/>
                 <constraint firstItem="0aC-Xl-p7a" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="mVb-5E-gq8"/>
+                <constraint firstAttribute="bottom" secondItem="jLd-bj-ENm" secondAttribute="bottom" constant="4" id="paq-OQ-Wb7"/>
                 <constraint firstItem="0aC-Xl-p7a" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" id="psL-Gr-edW"/>
                 <constraint firstItem="T3r-cE-ddT" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="16" id="rLs-QE-jCP"/>
+                <constraint firstItem="yLd-HK-Pwq" firstAttribute="leading" secondItem="jLd-bj-ENm" secondAttribute="trailing" constant="8" id="saS-6f-yqT"/>
             </constraints>
             <nil key="simulatedTopBarMetrics"/>
             <nil key="simulatedBottomBarMetrics"/>

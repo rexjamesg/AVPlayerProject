@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		D20F4379231CB51A00385297 /* Widget.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20F4378231CB51A00385297 /* Widget.swift */; };
+		D2156E87231E02A30068230C /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2156E86231E02A30068230C /* BaseViewController.swift */; };
 		D21F2F492318C28400F7BCF3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21F2F482318C28400F7BCF3 /* AppDelegate.swift */; };
 		D21F2F4B2318C28400F7BCF3 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21F2F4A2318C28400F7BCF3 /* ViewController.swift */; };
 		D21F2F4E2318C28400F7BCF3 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D21F2F4C2318C28400F7BCF3 /* Main.storyboard */; };
@@ -40,6 +41,7 @@
 
 /* Begin PBXFileReference section */
 		D20F4378231CB51A00385297 /* Widget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Widget.swift; sourceTree = "<group>"; };
+		D2156E86231E02A30068230C /* BaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
 		D21F2F452318C28400F7BCF3 /* AVPlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AVPlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D21F2F482318C28400F7BCF3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D21F2F4A2318C28400F7BCF3 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -159,6 +161,7 @@
 			isa = PBXGroup;
 			children = (
 				D21F2F4A2318C28400F7BCF3 /* ViewController.swift */,
+				D2156E86231E02A30068230C /* BaseViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -317,6 +320,7 @@
 				D21F2F492318C28400F7BCF3 /* AppDelegate.swift in Sources */,
 				D21F2F802318C41B00F7BCF3 /* UIViewExtension.swift in Sources */,
 				D21F2F862318C7A800F7BCF3 /* AVPlayerView.swift in Sources */,
+				D2156E87231E02A30068230C /* BaseViewController.swift in Sources */,
 				D20F4379231CB51A00385297 /* Widget.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -10,11 +10,26 @@ import UIKit
 
 protocol PlayerControlViewDelegate:class {
     
+    /**
+     滑桿變更影片目前時間
+     - Parameter value:變更的時間
+     */
     func didChangeCurrentTime(value:Float)
+    
+    ///播放按鈕功能
     func playAction()
+    
+    ///快轉
     func playerControlForward()
+    
+    ///回放
     func playerControlRewind()
+    
+    ///橫式直式切換
     func orientationAction()
+    
+    ///手指離開滑桿
+    func didEndChangeSliderValue()
 }
 
 @IBDesignable
@@ -30,6 +45,7 @@ class PlayerControlView: UIView {
     @IBOutlet weak var durationSlider: UISlider!
     @IBOutlet weak var orientationButton: UIButton!
     @IBOutlet weak var baseView: UIView!
+    @IBOutlet weak var playerProgressView: UIProgressView!
     
     private var pauseImage:UIImage = UIImage.init(named: "baseline_pause_white")!
     private var playImage:UIImage = UIImage.init(named: "baseline_play_arrow_white")!
@@ -63,7 +79,13 @@ class PlayerControlView: UIView {
             let view = try loadNib(nibName: "PlayerControlView")
             
             addSubview(view)
-
+            
+            
+            if let thumbImage:UIImage = UIImage(named: "sliderThumb") {
+                
+                durationSlider.setThumbImage(thumbImage, for: .normal )
+            }
+            
             setDisplayTimer()
             
         } catch {
@@ -71,34 +93,6 @@ class PlayerControlView: UIView {
             print("error:\(error)")
         }
         
-    }
-    
-    ///播放
-    @IBAction func playAction(_ sender: Any) {
-        
-        print("playAction")
-        
-        delegate?.playAction()
-    }
-    
-    ///快轉
-    @IBAction func fastForwardAction(_ sender: Any) {
-        
-        print("fastForwardAction")
-        
-        setDisplayTimer()
-        
-        delegate?.playerControlForward()
-    }
-    
-    ///回放
-    @IBAction func rewindAction(_ sender: Any) {
-        
-        print("rewindAction")
-        
-        setDisplayTimer()
-        
-        delegate?.playerControlRewind()
     }
     
     /**
@@ -109,25 +103,21 @@ class PlayerControlView: UIView {
         
         currentimLabel.text = Widget.formatConversion(time: time)
         
-        //print("time",time)
-        
-        durationSlider.value = Float(time)/100
+        durationSlider.value = Float(time)
         
     }
     
     /**
-     設定影片長度
-     
+     設定影片長度滑桿最大值
      - Parameter time: 影片總長度
-     
      */
     func setTotalTime(time:Float64) {
                 
         totalTimeLabel.text = Widget.formatConversion(time: time)
         
-        //durationSlider.minimumValue = 0
+        durationSlider.minimumValue = 0
         
-        //durationSlider.maximumValue = Float(time)
+        durationSlider.maximumValue = Float(time)
         
         durationSlider.value = 0
         
@@ -135,20 +125,17 @@ class PlayerControlView: UIView {
         
     }
     
-    ///選擇影片目前時間
-    @IBAction func currentTimeSliderAction(_ sender: Any) {
-        
-        if let slider = sender as? UISlider {
-            
-            delegate?.didChangeCurrentTime(value: slider.value*100)
-            
-        }
-    }
-    
-    ///直式橫式切換
-    @IBAction func orientationAction(_ sender: Any) {
+    /**
+     設定緩衝進度條
+     - Parameter current:目前進度
+     - Parameter total:總進度
+     */
+    func setProcessViewValue(current:Float64, total:Float64) {
      
-        delegate?.orientationAction()
+        let progress:Float = Float(current/total)
+        
+        playerProgressView.setProgress(progress, animated: false)
+        
     }
     
     /**
@@ -171,9 +158,7 @@ class PlayerControlView: UIView {
     
     /**
      設定播放鈕圖示
-     
-     - Parameter isPlaying:是諷正在播放影片
-     
+     - Parameter isPlaying:是否正在播放影片
      */
     func setPlayButton(isPlaying:Bool) {
         
@@ -186,15 +171,6 @@ class PlayerControlView: UIView {
         } else {
             
             playButton.setImage(playImage, for: .normal)
-        }
-        
-    }
-    
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        
-        if let _ = touches.first?.location(in: baseView) {
-            
-            hide()
         }
         
     }
@@ -228,6 +204,80 @@ class PlayerControlView: UIView {
             
             self.displayTimer?.invalidate()
         })
+        
+    }
+    
+    ///選擇影片目前時間
+    @IBAction func currentTimeSliderAction(_ sender: Any) {
+        
+        if let slider = sender as? UISlider {
+            
+            displayTimer?.invalidate()
+            
+            delegate?.didChangeCurrentTime(value: slider.value)
+            
+        }
+    }
+    
+    ///直式橫式切換
+    @IBAction func orientationAction(_ sender: Any) {
+        
+        delegate?.orientationAction()
+    }
+    
+    @IBAction func sliderEndChangeInside(_ sender: Any) {
+        
+        print("end")
+        
+        setDisplayTimer()
+        
+        delegate?.didEndChangeSliderValue()
+    }
+    
+    @IBAction func sliderEndChangeOutside(_ sender: Any) {
+        
+        print("end")
+        
+        setDisplayTimer()
+        
+        delegate?.didEndChangeSliderValue()
+        
+    }
+    
+    ///播放
+    @IBAction func playAction(_ sender: Any) {
+        
+        print("playAction")
+        
+        delegate?.playAction()
+    }
+    
+    ///快轉
+    @IBAction func fastForwardAction(_ sender: Any) {
+        
+        print("fastForwardAction")
+        
+        setDisplayTimer()
+        
+        delegate?.playerControlForward()
+    }
+    
+    ///回放
+    @IBAction func rewindAction(_ sender: Any) {
+        
+        print("rewindAction")
+        
+        setDisplayTimer()
+        
+        delegate?.playerControlRewind()
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        
+        if let _ = touches.first?.location(in: baseView) {
+            
+            hide()
+        }
         
     }
     
