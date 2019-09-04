@@ -11,14 +11,29 @@ import UIKit
 class BaseViewController: UIViewController {
     
     enum AlertType {
-        case Normal
-        case Option
+        case normal
+        case option
     }
+    
+    var topHeight:CGFloat = 0
+    var bottomHeight:CGFloat = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        
+        if let navigationBar = navigationController?.navigationBar {
+            
+            topHeight = navigationBar.frame.size.height
+            
+        }
+        
+        if let tabbar = tabBarController?.tabBar {
+            
+            bottomHeight = tabbar.frame.size.height
+            
+        }
     }
     
     func presentAlert(title:String?, message:String?, alertType:AlertType, handler:((Bool) -> Void)? = nil) {
@@ -32,7 +47,7 @@ class BaseViewController: UIViewController {
             }
         }))
         
-        if alertType == .Option {
+        if alertType == .option {
         
             alert.addAction(UIAlertAction.init(title: "取消", style: .cancel, handler: { (action) in
                 

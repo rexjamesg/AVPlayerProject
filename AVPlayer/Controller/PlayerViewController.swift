@@ -10,34 +10,44 @@ import UIKit
 import AVKit
 import AVFoundation
 
-class ViewController: BaseViewController, AVPlayerViewDelegate, PlayerControlViewDelegate {
+class PlayerViewController: BaseViewController, AVPlayerViewDelegate, PlayerControlViewDelegate{
 
     var player:AVPlayerView = AVPlayerView()
     
     var playerControlView:PlayerControlView = PlayerControlView()
     
+    @IBOutlet weak var backButton: UIButton!
+    
     var isLandscape:Bool {
-        
         return UIDevice.current.orientation.isLandscape
-        
     }
+    
+    var video:Video?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         
-        player = AVPlayerView.init(frame: getResizedFrame())
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        
+        let width = view.frame.size.width
+        let height = width/16*9
+        
+        player = AVPlayerView.init(frame: CGRect.init(x: 0, y: view.frame.size.height/2-height/2, width: width, height: height))
         
         //在影片讀取之前就要把控制UI實作
-        playerControlView = PlayerControlView.init(frame: getResizedFrame())
-        
-        //player.center = view.center
+        playerControlView = PlayerControlView.init(frame: player.bounds)
         
         player.delegate = self
         
         view.addSubview(player)
         
-        player.setPlayer(urlSting: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4")
+        if let path = video?.sources {
+            
+            player.setPlayer(urlSting: path)
+        }
         
         
         playerControlView.delegate = self
@@ -45,10 +55,10 @@ class ViewController: BaseViewController, AVPlayerViewDelegate, PlayerControlVie
         player.addSubview(playerControlView)
         
         player.bringSubviewToFront(playerControlView)
-        
+    
     }
     
-    private func getResizedFrame() -> CGRect {
+    private func setResizedFrame() {
         
         var width = view.frame.size.width
         
@@ -66,63 +76,63 @@ class ViewController: BaseViewController, AVPlayerViewDelegate, PlayerControlVie
             
             print("Landscape")
             
-            return CGRect.init(x: 0, y: 0, width: height, height: width)
+            player.frame = CGRect.init(x: 0, y: 0, width: height, height: width)
             
         } else {
             
             print("Portrait")
             
-            return CGRect.init(x: 0, y: 0, width: width, height: width/16*9)
+            let playerHeight = width/16*9
+            
+            player.frame = CGRect.init(x: 0, y: height/2-playerHeight/2, width: width, height: playerHeight)
         }
         
+        playerControlView.frame = player.bounds
     }
     
     ///偵測螢幕自動轉向
     override func willTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator) {
         super.willTransition(to: newCollection, with: coordinator)
         
-        player.frame = getResizedFrame()
+        setResizedFrame()
         
         player.resizeSubViews()
         
-        playerControlView.frame = getResizedFrame()
-        
         playerControlView.setOrientationButtonImage(isLandscape: isLandscape)
-        
     }
     
     //MARK: ----- AVPlayerViewDelegate -----
-    func playerDidReceiveFail() {
+    func playerDidReceiveFail(_ player:AVPlayerView) {
     
-        presentAlert(title: "讀取失敗", message: nil, alertType: .Normal, handler: nil)
+        presentAlert(title: "讀取失敗", message: nil, alertType: .normal, handler: nil)
     }
     
-    func didUpdatePlayerCurrentTime(time: Float64) {
+    func didUpdatePlayerCurrentTime(_ player:AVPlayerView, time: Float64) {
         
         playerControlView.updateCurrentTime(time: time)
         
     }
     
-    func playerBufferProgress(currentTime: Float64, totalTime: Float64) {
+    func playerBufferProgress(_ player:AVPlayerView, currentTime: Float64, totalTime: Float64) {
         
         playerControlView.setProcessViewValue(current: currentTime, total: totalTime)
         
     }
     
-    func playerDidFinishPlaying() {
+    func playerDidFinishPlaying(_ player:AVPlayerView) {
         
         print("finish")
         
     }
     
-    func playerPlayAndPause(isPlaying: Bool) {
+    func playerPlayAndPause(_ player:AVPlayerView, isPlaying: Bool) {
                 
         print("isPlaying",isPlaying)
         
         playerControlView.setPlayButton(isPlaying: isPlaying)
     }
     
-    func didReceiveTotalDuration(time: Float64) {
+    func didReceiveTotalDuration(_ player:AVPlayerView, time: Float64) {
     
         print("didReceiveTotalDuration",time)
         
@@ -130,24 +140,27 @@ class ViewController: BaseViewController, AVPlayerViewDelegate, PlayerControlVie
     
     }
     
-    
-    func didTouchPlayer() {
+    func didTouchPlayer(_ player:AVPlayerView) {
         
         playerControlView.show()
     }
     
+    func didRewindOrFastforward(_ player:AVPlayerView) {
+        
+        player.play()
+    }
+    
     //MARK: ----- PlayerControlViewDelegate -----
-    func didChangeCurrentTime(value: Float) {
+    func playerControlView(_ controlView:PlayerControlView, timeSliderValueChange value: Float) {
         
         print("didChangeCurrentTime")
         
         player.changeCurrentTime(time: value)
-        
     }
     
-    func playAction() {
+    func playerControlViewPlayAction(_ controlView: PlayerControlView) {
         
-        playerControlView.setPlayButton(isPlaying: player.isPlaying)
+        controlView.setPlayButton(isPlaying: player.isPlaying)
         
         if player.isPlaying {
             
@@ -159,24 +172,21 @@ class ViewController: BaseViewController, AVPlayerViewDelegate, PlayerControlVie
         }
     }
     
-    func playerControlForward() {
-        
+    func playerControlViewFastforward(_ controlView:PlayerControlView) {
         player.fastForward()
-        
     }
-
-    func playerControlRewind() {
-        
+    
+    
+    func playerControlViewRewind(_ controlView:PlayerControlView) {
         player.rewind()
     }
     
-    func didEndChangeSliderValue() {
-        
+    func playerControlViewEndChangeSliderValue(_ controlView:PlayerControlView) {
         player.play()
     }
     
-    func orientationAction() {
-
+    func playerControlViewOrientationAction(_ controlView:PlayerControlView) {
+        
         var value:Int = UIInterfaceOrientation.landscapeLeft.rawValue
         
         if UIApplication.shared.statusBarOrientation == .landscapeLeft ||  UIApplication.shared.statusBarOrientation == .landscapeRight {
@@ -186,8 +196,11 @@ class ViewController: BaseViewController, AVPlayerViewDelegate, PlayerControlVie
         
         UIDevice.current.setValue(value, forKey: "orientation")
         UIViewController.attemptRotationToDeviceOrientation()
-        
     }
     
+    @IBAction func backAction(_ sender: Any) {
+        
+        dismiss(animated: true, completion: nil)
+    }
 }
 

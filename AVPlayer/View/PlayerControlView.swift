@@ -14,22 +14,22 @@ protocol PlayerControlViewDelegate:class {
      滑桿變更影片目前時間
      - Parameter value:變更的時間
      */
-    func didChangeCurrentTime(value:Float)
+    func playerControlView(_ controlView:PlayerControlView, timeSliderValueChange value:Float)
     
     ///播放按鈕功能
-    func playAction()
+    func playerControlViewPlayAction(_ controlView:PlayerControlView)
     
     ///快轉
-    func playerControlForward()
+    func playerControlViewFastforward(_ controlView:PlayerControlView)
     
     ///回放
-    func playerControlRewind()
+    func playerControlViewRewind(_ controlView:PlayerControlView)
     
     ///橫式直式切換
-    func orientationAction()
+    func playerControlViewOrientationAction(_ controlView:PlayerControlView)
     
     ///手指離開滑桿
-    func didEndChangeSliderValue()
+    func playerControlViewEndChangeSliderValue(_ controlView:PlayerControlView)
 }
 
 @IBDesignable
@@ -214,7 +214,7 @@ class PlayerControlView: UIView {
             
             displayTimer?.invalidate()
             
-            delegate?.didChangeCurrentTime(value: slider.value)
+            delegate?.playerControlView(self, timeSliderValueChange: slider.value)
             
         }
     }
@@ -222,7 +222,7 @@ class PlayerControlView: UIView {
     ///直式橫式切換
     @IBAction func orientationAction(_ sender: Any) {
         
-        delegate?.orientationAction()
+        delegate?.playerControlViewOrientationAction(self)
     }
     
     @IBAction func sliderEndChangeInside(_ sender: Any) {
@@ -231,7 +231,7 @@ class PlayerControlView: UIView {
         
         setDisplayTimer()
         
-        delegate?.didEndChangeSliderValue()
+        delegate?.playerControlViewEndChangeSliderValue(self)
     }
     
     @IBAction func sliderEndChangeOutside(_ sender: Any) {
@@ -240,7 +240,7 @@ class PlayerControlView: UIView {
         
         setDisplayTimer()
         
-        delegate?.didEndChangeSliderValue()
+        delegate?.playerControlViewEndChangeSliderValue(self)
         
     }
     
@@ -249,7 +249,7 @@ class PlayerControlView: UIView {
         
         print("playAction")
         
-        delegate?.playAction()
+        delegate?.playerControlViewPlayAction(self)
     }
     
     ///快轉
@@ -259,7 +259,7 @@ class PlayerControlView: UIView {
         
         setDisplayTimer()
         
-        delegate?.playerControlForward()
+        delegate?.playerControlViewFastforward(self)
     }
     
     ///回放
@@ -269,7 +269,7 @@ class PlayerControlView: UIView {
         
         setDisplayTimer()
         
-        delegate?.playerControlRewind()
+        delegate?.playerControlViewRewind(self)
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {

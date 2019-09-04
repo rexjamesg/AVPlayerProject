@@ -16,35 +16,38 @@ protocol AVPlayerViewDelegate:class {
      更新影片目前時間
      - Parameter time: 目前的時間
      */
-    func didUpdatePlayerCurrentTime(time:Float64)
+    func didUpdatePlayerCurrentTime(_ player:AVPlayerView, time:Float64)
     
     ///播放完畢
-    func playerDidFinishPlaying()
+    func playerDidFinishPlaying(_ player:AVPlayerView)
     
     /**
      開始與結束播放
      - Parameter isPlaying: 是否正在播放
      */
-    func playerPlayAndPause(isPlaying:Bool)
+    func playerPlayAndPause(_ player:AVPlayerView, isPlaying:Bool)
     
     /**
      接收到影片長度
      - Parameter time: 影片長度
      */
-    func didReceiveTotalDuration(time:Float64)
+    func didReceiveTotalDuration(_ player:AVPlayerView, time:Float64)
     
     ///觸摸播放器圖層
-    func didTouchPlayer()
+    func didTouchPlayer(_ player:AVPlayerView)
     
     ///播放失敗
-    func playerDidReceiveFail()
+    func playerDidReceiveFail(_ player:AVPlayerView)
     
     /**
      影片緩衝進度
      - Parameter currentTime: 緩衝目前進度
      - Parameter totalTime: 影片總長度
      */
-    func playerBufferProgress(currentTime:Float64, totalTime:Float64)
+    func playerBufferProgress(_ player:AVPlayerView, currentTime:Float64, totalTime:Float64)
+    
+    ///快轉或倒轉
+    func didRewindOrFastforward(_ player:AVPlayerView)
 }
 
 class AVPlayerView: UIView {
@@ -139,13 +142,13 @@ class AVPlayerView: UIView {
                     
                     pause()
                     
-                    delegate?.playerDidReceiveFail()
+                    delegate?.playerDidReceiveFail(self)
                     
                     print("AVPlayerStatusFailed")
                     
                 } else {
                     
-                    delegate?.playerDidReceiveFail()
+                    delegate?.playerDidReceiveFail(self)
                     
                     print("AVPlayerStatusUnknown")
                 }
@@ -181,7 +184,7 @@ class AVPlayerView: UIView {
                 let durationSeconds = CMTimeGetSeconds(newTimeRange.duration)
                 let totalBuffer = startSeconds + durationSeconds//緩衝長度
                 
-                delegate?.playerBufferProgress(currentTime: totalBuffer, totalTime: CMTimeGetSeconds(item.asset.duration))
+                delegate?.playerBufferProgress(self, currentTime: totalBuffer, totalTime: CMTimeGetSeconds(item.asset.duration))
                 
                 //print("當前緩衝時間",totalBuffer)
             }
@@ -204,8 +207,7 @@ class AVPlayerView: UIView {
                 
                 let currentTime = CMTimeGetSeconds(self.player!.currentTime())
                 
-                self.delegate?.didUpdatePlayerCurrentTime(time: currentTime)
-                
+                self.delegate?.didUpdatePlayerCurrentTime(self, time: currentTime)
             }
         })
     }
@@ -218,7 +220,7 @@ class AVPlayerView: UIView {
         //把 duration 轉為影片的總時間（秒數）。
         let seconds = CMTimeGetSeconds(duration)
 
-        delegate?.didReceiveTotalDuration(time: seconds)
+        delegate?.didReceiveTotalDuration(self, time: seconds)
     }
     
     ///影片播放完畢
@@ -251,8 +253,9 @@ class AVPlayerView: UIView {
         if let time = currentSecond {
             
             changeCurrentTime(time: Float(time+5))
+            
+            delegate?.didRewindOrFastforward(self)
         }
-
     }
     
     ///回放
@@ -261,6 +264,8 @@ class AVPlayerView: UIView {
         if let time = currentSecond {
             
             changeCurrentTime(time: Float(time-5))
+            
+            delegate?.didRewindOrFastforward(self)
         }
     }
     
@@ -271,7 +276,7 @@ class AVPlayerView: UIView {
         
         player?.play()
         
-        delegate?.playerPlayAndPause(isPlaying: isPlaying)
+        delegate?.playerPlayAndPause(self, isPlaying: isPlaying)
         
         print("play")
     }
@@ -283,7 +288,7 @@ class AVPlayerView: UIView {
         
         player?.pause()
         
-        delegate?.playerPlayAndPause(isPlaying: isPlaying)
+        delegate?.playerPlayAndPause(self, isPlaying: isPlaying)
         
         print("pause")
         
@@ -291,7 +296,7 @@ class AVPlayerView: UIView {
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         
-        delegate?.didTouchPlayer()
+        delegate?.didTouchPlayer(self)
     }
     
     /*

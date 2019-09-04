@@ -60,26 +60,8 @@ extension UIView {
         layer.shadowPath = UIBezierPath(roundedRect: bounds, cornerRadius: layer.cornerRadius).cgPath
         
     }
-    
-    //讀取xib 舊方法 1.0使用
-    /*
-     func loadViewFromNib(nibName:String)->UIView {
-     
-     let bundle = Bundle(for: type(of: self))
-     let nib = UINib(nibName: nibName, bundle: bundle)
-     
-     
-     let view = nib.instantiate(withOwner: self, options: nil)[0] as! UIView
-     
-     view.frame = bounds
-     
-     view.autoresizingMask = [.flexibleWidth , .flexibleHeight]
-     
-     return view
-     }
-     */
-    
-    //讀取xib 新方法 2.0使用
+
+    //讀取xib
     func loadNib(nibName:String) throws -> UIView {
         
         enum LoadNibError:Error {
