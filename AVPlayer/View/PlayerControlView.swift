@@ -46,6 +46,7 @@ class PlayerControlView: UIView {
     @IBOutlet weak var orientationButton: UIButton!
     @IBOutlet weak var baseView: UIView!
     @IBOutlet weak var playerProgressView: UIProgressView!
+    @IBOutlet weak var indicator: UIActivityIndicatorView!
     
     private var pauseImage:UIImage = UIImage.init(named: "baseline_pause_white")!
     private var playImage:UIImage = UIImage.init(named: "baseline_play_arrow_white")!
@@ -204,6 +205,15 @@ class PlayerControlView: UIView {
             
             self.displayTimer?.invalidate()
         })
+    }
+    
+    func setIndicator(isLoading:Bool) {
+        
+        if isLoading {            
+            indicator.startAnimating()
+        } else {
+            indicator.stopAnimating()
+        }
         
     }
     

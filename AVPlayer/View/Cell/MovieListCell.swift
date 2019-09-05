@@ -15,13 +15,15 @@ class MovieListCell: UICollectionViewCell {
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var movieTitle: UILabel!
     @IBOutlet weak var movieSubtitle: UILabel!
+    @IBOutlet weak var movieDescription: UILabel!
+    @IBOutlet weak var titleBase: UIView!
     
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
         
         self.setCornerRadius(value: 5.0)
-        
+    
     }
     
     func setUp(video:Video) {
@@ -34,6 +36,8 @@ class MovieListCell: UICollectionViewCell {
         movieTitle.text = video.title
         
         movieSubtitle.text = video.subtitle
+        
+        movieDescription.text = video.description
         
     }
 

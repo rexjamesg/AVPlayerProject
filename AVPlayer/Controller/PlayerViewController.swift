@@ -31,6 +31,34 @@ class PlayerViewController: BaseViewController, AVPlayerViewDelegate, PlayerCont
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        /*
+        let width = view.frame.size.width
+        let height = width/16*9
+        
+        player = AVPlayerView.init(frame: CGRect.init(x: 0, y: view.frame.size.height/2-height/2, width: width, height: height))
+        
+        //在影片讀取之前就要把控制UI實作
+        playerControlView = PlayerControlView.init(frame: player.bounds)
+        
+        player.delegate = self
+        
+        view.addSubview(player)
+        
+        if let path = video?.sources {
+            
+            player.setPlayer(urlSting: path)
+        }
+        
+        
+        playerControlView.delegate = self
+        
+        player.addSubview(playerControlView)
+        
+        player.bringSubviewToFront(playerControlView)
+        */
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
         
         let width = view.frame.size.width
         let height = width/16*9
@@ -55,7 +83,6 @@ class PlayerViewController: BaseViewController, AVPlayerViewDelegate, PlayerCont
         player.addSubview(playerControlView)
         
         player.bringSubviewToFront(playerControlView)
-    
     }
     
     private func setResizedFrame() {
@@ -125,11 +152,23 @@ class PlayerViewController: BaseViewController, AVPlayerViewDelegate, PlayerCont
         
     }
     
+    func playerPlaybackBufferEmpty(_ player: AVPlayerView) {
+        
+        playerControlView.setIndicator(isLoading: true)
+    }
+    
+    func playerPlaybackLikelyToKeepUp(_ player: AVPlayerView) {
+        
+        playerControlView.setIndicator(isLoading: false)
+    }
+    
     func playerPlayAndPause(_ player:AVPlayerView, isPlaying: Bool) {
                 
         print("isPlaying",isPlaying)
         
         playerControlView.setPlayButton(isPlaying: isPlaying)
+        
+        playerControlView.setIndicator(isLoading: false)
     }
     
     func didReceiveTotalDuration(_ player:AVPlayerView, time: Float64) {
@@ -200,7 +239,15 @@ class PlayerViewController: BaseViewController, AVPlayerViewDelegate, PlayerCont
     
     @IBAction func backAction(_ sender: Any) {
         
+        player.removeObserver()
+        
         dismiss(animated: true, completion: nil)
+    }
+    
+    deinit {
+        
+        print("deinit")
+        
     }
 }
 

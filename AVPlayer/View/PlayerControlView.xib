@@ -16,6 +16,7 @@
                 <outlet property="currentimLabel" destination="T3r-cE-ddT" id="WQR-MZ-YLH"/>
                 <outlet property="durationSlider" destination="jLd-bj-ENm" id="l0T-eH-df7"/>
                 <outlet property="forwardButton" destination="TFz-qN-Hy5" id="4UX-S6-r9Y"/>
+                <outlet property="indicator" destination="HU2-k6-eYc" id="AEe-Nb-lGs"/>
                 <outlet property="orientationButton" destination="nSx-5g-ZwH" id="7XZ-m2-2Oi"/>
                 <outlet property="playButton" destination="yC7-pv-wXK" id="pkG-uX-N58"/>
                 <outlet property="playerProgressView" destination="Ulz-Ow-ZEX" id="OK9-4p-gIh"/>
@@ -30,7 +31,21 @@
             <subviews>
                 <view alpha="0.29999999999999999" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="0aC-Xl-p7a">
                     <rect key="frame" x="0.0" y="0.0" width="320" height="180"/>
+                    <subviews>
+                        <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" animating="YES" style="white" translatesAutoresizingMaskIntoConstraints="NO" id="HU2-k6-eYc">
+                            <rect key="frame" x="150" y="40" width="20" height="20"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="20" id="jgy-sl-nk4"/>
+                                <constraint firstAttribute="width" constant="20" id="mzf-ed-KuE"/>
+                            </constraints>
+                        </activityIndicatorView>
+                    </subviews>
                     <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <constraints>
+                        <constraint firstItem="HU2-k6-eYc" firstAttribute="leading" secondItem="0aC-Xl-p7a" secondAttribute="leading" constant="150" id="87W-ps-jmb"/>
+                        <constraint firstItem="HU2-k6-eYc" firstAttribute="top" secondItem="0aC-Xl-p7a" secondAttribute="top" constant="40" id="S5i-el-hA9"/>
+                        <constraint firstAttribute="trailing" secondItem="HU2-k6-eYc" secondAttribute="trailing" constant="150" id="ztZ-ET-tjl"/>
+                    </constraints>
                 </view>
                 <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Ulz-Ow-ZEX">
                     <rect key="frame" x="58" y="161" width="174" height="2"/>

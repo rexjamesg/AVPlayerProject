@@ -48,6 +48,13 @@ protocol AVPlayerViewDelegate:class {
     
     ///快轉或倒轉
     func didRewindOrFastforward(_ player:AVPlayerView)
+    
+    
+    ///播放器沒有緩衝
+    func playerPlaybackBufferEmpty(_ player:AVPlayerView)
+    
+    ///緩衝足夠
+    func playerPlaybackLikelyToKeepUp(_ player:AVPlayerView)
 }
 
 class AVPlayerView: UIView {
@@ -117,11 +124,12 @@ class AVPlayerView: UIView {
         NotificationCenter.default.addObserver(self, selector: #selector(playerDidFinishPlaying), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
         
         player?.currentItem?.addObserver(self, forKeyPath: PlayerObserverKey.status.rawValue, options: .new, context: nil)
-        //緩衝區，可用來獲取快取存了多少
+        //緩衝，可用來獲取快取存了多少
         player?.currentItem?.addObserver(self, forKeyPath: PlayerObserverKey.loadedTimeRanges.rawValue, options: .new, context: nil)
-        //緩衝區不夠，停止播放
+        //緩衝不夠，停止播放
         player?.currentItem?.addObserver(self, forKeyPath: PlayerObserverKey.playbackBufferEmpty.rawValue, options: .new, context: nil)
-        //緩衝區不夠，停止播放
+        
+        //緩衝足夠，手動播放
         player?.currentItem?.addObserver(self, forKeyPath: PlayerObserverKey.playbackLikelyToKeepUp.rawValue, options: .new, context: nil)
         
     }
@@ -152,29 +160,41 @@ class AVPlayerView: UIView {
                     
                     print("AVPlayerStatusUnknown")
                 }
-                
             }
         
         } else if keyPath == PlayerObserverKey.loadedTimeRanges.rawValue {
             
             setPlayerBuffer()
             
-            
         } else if keyPath == PlayerObserverKey.playbackBufferEmpty.rawValue {
             
             print("playbackBufferEmpty")
+            
+            delegate?.playerPlaybackBufferEmpty(self)
             
         } else if keyPath == PlayerObserverKey.playbackLikelyToKeepUp.rawValue {
             
             print("playbackLikelyToKeepUp")
             
+            delegate?.playerPlaybackLikelyToKeepUp(self)
+            
         }
+    }
+    
+    private func availableDuration() -> CMTime {
+        
+        if let range = self.player?.currentItem?.loadedTimeRanges.first {
+            return CMTimeRangeGetEnd(range.timeRangeValue)
+        }
+        return .zero
     }
     
     private func setPlayerBuffer() {
         
         if let item = playerItem {
          
+            //print("xxxx",CMTimeShow(availableDuration()))
+            
             let loadTimeArray = item.loadedTimeRanges
             
             //取得緩衝區間
@@ -297,6 +317,26 @@ class AVPlayerView: UIView {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         
         delegate?.didTouchPlayer(self)
+    }
+    
+    func removeObserver() {
+        
+        /*
+        NotificationCenter.default.removeObserver(self, forKeyPath: NSNotification.Name.AVPlayerItemDidPlayToEndTime.rawValue)
+        
+        player?.currentItem?.removeObserver(self, forKeyPath: PlayerObserverKey.status.rawValue)
+        player?.currentItem?.removeObserver(self, forKeyPath: PlayerObserverKey.loadedTimeRanges.rawValue)
+        player?.currentItem?.removeObserver(self, forKeyPath: PlayerObserverKey.playbackBufferEmpty.rawValue)
+        player?.currentItem?.removeObserver(self, forKeyPath: PlayerObserverKey.playbackLikelyToKeepUp.rawValue)
+        
+        player?.removeTimeObserver(self)
+        */
+        if avPlayerLayer != nil {
+            
+            avPlayerLayer.removeFromSuperlayer()
+            avPlayerLayer = nil
+        }
+        
     }
     
     /*
