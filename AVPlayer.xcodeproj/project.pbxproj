@@ -11,6 +11,7 @@
 		8B5EFD0AF934C71A56ADAA1A /* Pods_AVPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FFF5BD887B5DF86ECA10914 /* Pods_AVPlayer.framework */; };
 		D20F4379231CB51A00385297 /* Widget.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20F4378231CB51A00385297 /* Widget.swift */; };
 		D2156E87231E02A30068230C /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2156E86231E02A30068230C /* BaseViewController.swift */; };
+		D219904823223B560073D969 /* WaveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D219904723223B550073D969 /* WaveView.swift */; };
 		D21F2F492318C28400F7BCF3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21F2F482318C28400F7BCF3 /* AppDelegate.swift */; };
 		D21F2F4B2318C28400F7BCF3 /* PlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21F2F4A2318C28400F7BCF3 /* PlayerViewController.swift */; };
 		D21F2F4E2318C28400F7BCF3 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D21F2F4C2318C28400F7BCF3 /* Main.storyboard */; };
@@ -58,6 +59,7 @@
 		9442188039F433AC3A809589 /* Pods-AVPlayerTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AVPlayerTests.release.xcconfig"; path = "Target Support Files/Pods-AVPlayerTests/Pods-AVPlayerTests.release.xcconfig"; sourceTree = "<group>"; };
 		D20F4378231CB51A00385297 /* Widget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Widget.swift; sourceTree = "<group>"; };
 		D2156E86231E02A30068230C /* BaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
+		D219904723223B550073D969 /* WaveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaveView.swift; sourceTree = "<group>"; };
 		D21F2F452318C28400F7BCF3 /* AVPlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AVPlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D21F2F482318C28400F7BCF3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D21F2F4A2318C28400F7BCF3 /* PlayerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerViewController.swift; sourceTree = "<group>"; };
@@ -204,6 +206,7 @@
 		D21F2F792318C34700F7BCF3 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				D219904723223B550073D969 /* WaveView.swift */,
 				D21F2F812318C44600F7BCF3 /* PlayerControlView.swift */,
 				D21F2F822318C44600F7BCF3 /* PlayerControlView.xib */,
 				D2D39444231FB77A00731347 /* Player */,
@@ -485,6 +488,7 @@
 				D21F2F832318C44600F7BCF3 /* PlayerControlView.swift in Sources */,
 				D21F2F492318C28400F7BCF3 /* AppDelegate.swift in Sources */,
 				D21F2F802318C41B00F7BCF3 /* UIViewExtension.swift in Sources */,
+				D219904823223B560073D969 /* WaveView.swift in Sources */,
 				D2D39443231FB50E00731347 /* Cateogries.swift in Sources */,
 				D21F2F862318C7A800F7BCF3 /* AVPlayerView.swift in Sources */,
 				D2D39438231F540E00731347 /* JSONData.swift in Sources */,

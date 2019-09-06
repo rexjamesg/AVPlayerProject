@@ -27,6 +27,7 @@ class MovieListViewController: BaseViewController, UICollectionViewDelegate, UIC
         listCollectionView.dataSource = self
         
         data = JSONData.getVideos()
+
     }
     
     //MARK: ----- UICollectionViewDelegate & UICollectionViewDataSource -----
@@ -54,7 +55,6 @@ class MovieListViewController: BaseViewController, UICollectionViewDelegate, UIC
         
         return cell
     }
-    
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         

@@ -15,12 +15,14 @@
                 <outlet property="baseView" destination="0aC-Xl-p7a" id="UMT-zO-vtb"/>
                 <outlet property="currentimLabel" destination="T3r-cE-ddT" id="WQR-MZ-YLH"/>
                 <outlet property="durationSlider" destination="jLd-bj-ENm" id="l0T-eH-df7"/>
+                <outlet property="fastforwardLabel" destination="a0I-e8-6Ff" id="AFJ-pw-cKE"/>
                 <outlet property="forwardButton" destination="TFz-qN-Hy5" id="4UX-S6-r9Y"/>
                 <outlet property="indicator" destination="HU2-k6-eYc" id="AEe-Nb-lGs"/>
                 <outlet property="orientationButton" destination="nSx-5g-ZwH" id="7XZ-m2-2Oi"/>
                 <outlet property="playButton" destination="yC7-pv-wXK" id="pkG-uX-N58"/>
                 <outlet property="playerProgressView" destination="Ulz-Ow-ZEX" id="OK9-4p-gIh"/>
                 <outlet property="rewindButton" destination="6nu-Yl-RHw" id="SiJ-co-lQF"/>
+                <outlet property="rewindLabel" destination="swk-DL-JRY" id="cyJ-eI-hZl"/>
                 <outlet property="totalTimeLabel" destination="yLd-HK-Pwq" id="OCt-RP-JV1"/>
             </connections>
         </placeholder>
@@ -101,6 +103,27 @@
                         <constraint firstAttribute="height" constant="30" id="N7U-Um-one"/>
                     </constraints>
                 </stackView>
+                <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="dpP-6q-BIH">
+                    <rect key="frame" x="37" y="110" width="246" height="15"/>
+                    <subviews>
+                        <label opaque="NO" userInteractionEnabled="NO" alpha="0.0" contentMode="left" verticalHuggingPriority="251" text="倒退5秒" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="swk-DL-JRY">
+                            <rect key="frame" x="0.0" y="0.0" width="123" height="15"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                            <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <label opaque="NO" userInteractionEnabled="NO" alpha="0.0" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="快轉5秒" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="a0I-e8-6Ff">
+                            <rect key="frame" x="123" y="0.0" width="123" height="15"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                            <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                    </subviews>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="246" id="A9F-QK-2W0"/>
+                        <constraint firstAttribute="height" constant="15" id="w7x-vM-2Gy"/>
+                    </constraints>
+                </stackView>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="00:00" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="T3r-cE-ddT">
                     <rect key="frame" x="16" y="154" width="34" height="16"/>
                     <constraints>
@@ -149,6 +172,7 @@
             </subviews>
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="dpP-6q-BIH" secondAttribute="trailing" constant="37" id="0PB-Wb-Qga"/>
                 <constraint firstItem="jcf-a5-c0x" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="46" id="2X9-Ff-Oh6"/>
                 <constraint firstItem="nSx-5g-ZwH" firstAttribute="leading" secondItem="yLd-HK-Pwq" secondAttribute="trailing" constant="8" id="3KP-PM-YIw"/>
                 <constraint firstItem="jcf-a5-c0x" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="7y0-Jz-HvX"/>
@@ -162,7 +186,9 @@
                 <constraint firstItem="0aC-Xl-p7a" firstAttribute="trailing" secondItem="vUN-kp-3ea" secondAttribute="trailing" id="awE-33-n7n"/>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="jcf-a5-c0x" secondAttribute="trailing" constant="46" id="bVg-gw-11Y"/>
                 <constraint firstAttribute="bottom" secondItem="nSx-5g-ZwH" secondAttribute="bottom" constant="4" id="d1K-bX-YV6"/>
+                <constraint firstItem="dpP-6q-BIH" firstAttribute="top" secondItem="jcf-a5-c0x" secondAttribute="bottom" constant="5" id="dYi-K8-dWk"/>
                 <constraint firstAttribute="trailing" secondItem="nSx-5g-ZwH" secondAttribute="trailing" constant="8" id="fgH-JR-eU6"/>
+                <constraint firstItem="dpP-6q-BIH" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="37" id="lU4-3T-fcK"/>
                 <constraint firstItem="0aC-Xl-p7a" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="mVb-5E-gq8"/>
                 <constraint firstAttribute="bottom" secondItem="jLd-bj-ENm" secondAttribute="bottom" constant="4" id="paq-OQ-Wb7"/>
                 <constraint firstItem="0aC-Xl-p7a" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" id="psL-Gr-edW"/>

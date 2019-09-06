@@ -34,7 +34,7 @@ protocol AVPlayerViewDelegate:class {
     func didReceiveTotalDuration(_ player:AVPlayerView, time:Float64)
     
     ///觸摸播放器圖層
-    func didTouchPlayer(_ player:AVPlayerView)
+    //func didTouchPlayer(_ player:AVPlayerView)
     
     ///播放失敗
     func playerDidReceiveFail(_ player:AVPlayerView)
@@ -95,6 +95,7 @@ class AVPlayerView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
+        clipsToBounds = true
     }
     
     /**
@@ -128,7 +129,6 @@ class AVPlayerView: UIView {
         player?.currentItem?.addObserver(self, forKeyPath: PlayerObserverKey.loadedTimeRanges.rawValue, options: .new, context: nil)
         //緩衝不夠，停止播放
         player?.currentItem?.addObserver(self, forKeyPath: PlayerObserverKey.playbackBufferEmpty.rawValue, options: .new, context: nil)
-        
         //緩衝足夠，手動播放
         player?.currentItem?.addObserver(self, forKeyPath: PlayerObserverKey.playbackLikelyToKeepUp.rawValue, options: .new, context: nil)
         
@@ -314,11 +314,11 @@ class AVPlayerView: UIView {
         
     }
     
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        
-        delegate?.didTouchPlayer(self)
-    }
-    
+//    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+//
+//        delegate?.didTouchPlayer(self)
+//    }
+//
     func removeObserver() {
         
         /*

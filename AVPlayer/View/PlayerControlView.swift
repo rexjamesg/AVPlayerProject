@@ -48,6 +48,10 @@ class PlayerControlView: UIView {
     @IBOutlet weak var playerProgressView: UIProgressView!
     @IBOutlet weak var indicator: UIActivityIndicatorView!
     
+    @IBOutlet weak var fastforwardLabel: UILabel!
+    @IBOutlet weak var rewindLabel: UILabel!
+    
+    
     private var pauseImage:UIImage = UIImage.init(named: "baseline_pause_white")!
     private var playImage:UIImage = UIImage.init(named: "baseline_play_arrow_white")!
     private var fullScreenImage:UIImage = UIImage.init(named: "baseline_fullscreen_white")!
@@ -177,7 +181,7 @@ class PlayerControlView: UIView {
     }
     
     ///隱藏播放控制view
-    private func hide() {
+    func hide() {
         
         UIView.animate(withDuration: 0.3) {
             
@@ -214,7 +218,25 @@ class PlayerControlView: UIView {
         } else {
             indicator.stopAnimating()
         }
+    }
+    
+    func settTextLabel(isRewind:Bool) {
         
+        UIView.animate(withDuration: 0.5, animations: {
+            
+            if !isRewind {
+                self.fastforwardLabel.alpha = 1
+            } else {
+                self.rewindLabel.alpha = 1
+            }
+            
+        }) { (finished) in
+            
+            UIView.animate(withDuration: 0.5, animations: {
+                self.fastforwardLabel.alpha = 0
+                self.rewindLabel.alpha = 0
+            })
+        }
     }
     
     ///選擇影片目前時間
@@ -282,14 +304,14 @@ class PlayerControlView: UIView {
         delegate?.playerControlViewRewind(self)
     }
     
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        
-        if let _ = touches.first?.location(in: baseView) {
-            
-            hide()
-        }
-        
-    }
+//    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+//        
+//        if let _ = touches.first?.location(in: baseView) {
+//            
+//            hide()
+//        }
+//        
+//    }
     
     /*
     // Only override draw() if you perform custom drawing.

@@ -30,34 +30,6 @@ class PlayerViewController: BaseViewController, AVPlayerViewDelegate, PlayerCont
         
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        /*
-        let width = view.frame.size.width
-        let height = width/16*9
-        
-        player = AVPlayerView.init(frame: CGRect.init(x: 0, y: view.frame.size.height/2-height/2, width: width, height: height))
-        
-        //在影片讀取之前就要把控制UI實作
-        playerControlView = PlayerControlView.init(frame: player.bounds)
-        
-        player.delegate = self
-        
-        view.addSubview(player)
-        
-        if let path = video?.sources {
-            
-            player.setPlayer(urlSting: path)
-        }
-        
-        
-        playerControlView.delegate = self
-        
-        player.addSubview(playerControlView)
-        
-        player.bringSubviewToFront(playerControlView)
-        */
-    }
-    
     override func viewDidAppear(_ animated: Bool) {
         
         let width = view.frame.size.width
@@ -83,6 +55,76 @@ class PlayerViewController: BaseViewController, AVPlayerViewDelegate, PlayerCont
         player.addSubview(playerControlView)
         
         player.bringSubviewToFront(playerControlView)
+        
+        
+        setTapGestures()
+    }
+    
+    private func setTapGestures() {
+        
+        //player
+        let playerSingleTap = UITapGestureRecognizer(target: self, action: #selector(playerSingleTapAction))
+        playerSingleTap.numberOfTapsRequired = 1
+        player.addGestureRecognizer(playerSingleTap)
+        
+        let playerDoubleTap = UITapGestureRecognizer(target: self, action: #selector(playerDoubleTapAction(sender:)))
+        playerDoubleTap.numberOfTapsRequired = 2
+        player.addGestureRecognizer(playerDoubleTap)
+        
+        playerSingleTap.require(toFail: playerDoubleTap)
+        
+        //player Control
+        let playerControlSingleTap = UITapGestureRecognizer(target: self, action: #selector(playerControlSingleTapAction))
+        playerControlSingleTap.numberOfTapsRequired = 1
+        playerControlView.addGestureRecognizer(playerControlSingleTap)
+        
+        let playerControlDoubleTap = UITapGestureRecognizer(target: self, action: #selector(playerControlDoubleTapAction(sender:)))
+        playerControlDoubleTap.numberOfTapsRequired = 2
+        playerControlView.addGestureRecognizer(playerControlDoubleTap)
+        
+        playerControlSingleTap.require(toFail: playerControlDoubleTap)
+    }
+
+    @objc func playerSingleTapAction () {
+        
+        playerControlView.show()
+        
+    }
+    
+    @objc func playerDoubleTapAction (sender:UITapGestureRecognizer) {
+        
+        doubleTapAction(sender: sender)
+    }
+    
+    @objc func playerControlSingleTapAction () {
+        
+        playerControlView.hide()
+    }
+    
+    @objc func playerControlDoubleTapAction (sender:UITapGestureRecognizer) {
+        
+        doubleTapAction(sender: sender)
+    }
+    
+    private func doubleTapAction(sender:UITapGestureRecognizer) {
+        
+        let point = sender.location(in: view)
+        
+        if point.x > view.frame.size.width/2 {
+            
+            WaveView.waveAnimate(view: player, position: CGPoint.init(x: player.frame.size.width/4*3, y: player.frame.size.height/2))
+            
+            player.fastForward()
+            
+            playerControlView.settTextLabel(isRewind: false)
+            
+        } else {
+            
+            WaveView.waveAnimate(view: player, position: CGPoint.init(x: player.frame.size.width/4, y: player.frame.size.height/2))
+            player.rewind()
+            
+            playerControlView.settTextLabel(isRewind: true)
+        }
     }
     
     private func setResizedFrame() {
