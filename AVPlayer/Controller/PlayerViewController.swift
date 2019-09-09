@@ -27,7 +27,8 @@ class PlayerViewController: BaseViewController, AVPlayerViewDelegate, PlayerCont
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        
+     
+        AppDelegate.AppUtility.lockOrientation(.allButUpsideDown)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -116,14 +117,12 @@ class PlayerViewController: BaseViewController, AVPlayerViewDelegate, PlayerCont
             
             player.fastForward()
             
-            playerControlView.settTextLabel(isRewind: false)
-            
         } else {
             
             WaveView.waveAnimate(view: player, position: CGPoint.init(x: player.frame.size.width/4, y: player.frame.size.height/2))
+            
             player.rewind()
             
-            playerControlView.settTextLabel(isRewind: true)
         }
     }
     

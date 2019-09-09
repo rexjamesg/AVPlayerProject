@@ -47,10 +47,7 @@ class PlayerControlView: UIView {
     @IBOutlet weak var baseView: UIView!
     @IBOutlet weak var playerProgressView: UIProgressView!
     @IBOutlet weak var indicator: UIActivityIndicatorView!
-    
-    @IBOutlet weak var fastforwardLabel: UILabel!
-    @IBOutlet weak var rewindLabel: UILabel!
-    
+    @IBOutlet weak var controlStackView: UIStackView!
     
     private var pauseImage:UIImage = UIImage.init(named: "baseline_pause_white")!
     private var playImage:UIImage = UIImage.init(named: "baseline_play_arrow_white")!
@@ -127,7 +124,7 @@ class PlayerControlView: UIView {
         durationSlider.value = 0
         
         durationSlider.isContinuous = true
-        
+
     }
     
     /**
@@ -169,11 +166,15 @@ class PlayerControlView: UIView {
         
         if isPlaying {
             
+            playButton.setTitle("暫停", for: .normal)
+            
             playButton.setImage(pauseImage, for: .normal)
             
             setDisplayTimer()
             
         } else {
+            
+            playButton.setTitle("播放", for: .normal)
             
             playButton.setImage(playImage, for: .normal)
         }
@@ -217,25 +218,6 @@ class PlayerControlView: UIView {
             indicator.startAnimating()
         } else {
             indicator.stopAnimating()
-        }
-    }
-    
-    func settTextLabel(isRewind:Bool) {
-        
-        UIView.animate(withDuration: 0.5, animations: {
-            
-            if !isRewind {
-                self.fastforwardLabel.alpha = 1
-            } else {
-                self.rewindLabel.alpha = 1
-            }
-            
-        }) { (finished) in
-            
-            UIView.animate(withDuration: 0.5, animations: {
-                self.fastforwardLabel.alpha = 0
-                self.rewindLabel.alpha = 0
-            })
         }
     }
     

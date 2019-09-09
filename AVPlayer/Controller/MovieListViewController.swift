@@ -28,6 +28,7 @@ class MovieListViewController: BaseViewController, UICollectionViewDelegate, UIC
         
         data = JSONData.getVideos()
 
+        AppDelegate.AppUtility.lockOrientation(.portrait)
     }
     
     //MARK: ----- UICollectionViewDelegate & UICollectionViewDataSource -----
