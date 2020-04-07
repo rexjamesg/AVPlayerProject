@@ -13,6 +13,8 @@ class MovieListViewController: BaseViewController, UICollectionViewDelegate, UIC
     
     @IBOutlet weak var listCollectionView: UICollectionView!
     
+    @IBOutlet weak var flowLayout: UICollectionViewFlowLayout!
+    
     var data:Categories?
     
     override func viewDidLoad() {
@@ -26,9 +28,24 @@ class MovieListViewController: BaseViewController, UICollectionViewDelegate, UIC
         listCollectionView.delegate = self
         listCollectionView.dataSource = self
         
+        let width:CGFloat = view.frame.size.width*0.951690821
+        let height:CGFloat = width*0.76142132
+        
+        flowLayout.estimatedItemSize = CGSize(width: width, height: height)
+
         data = JSONData.getVideos()
 
         AppDelegate.AppUtility.lockOrientation(.portrait)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        
+        
+    }
+    
+    func reloadData() {
+                
+        listCollectionView.reloadData()
     }
     
     //MARK: ----- UICollectionViewDelegate & UICollectionViewDataSource -----
