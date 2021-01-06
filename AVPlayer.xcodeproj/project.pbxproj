@@ -25,7 +25,7 @@
 		D21F2F862318C7A800F7BCF3 /* AVPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21F2F852318C7A800F7BCF3 /* AVPlayerView.swift */; };
 		D2239303233321EB00289464 /* UICollectionViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2239302233321EB00289464 /* UICollectionViewExtension.swift */; };
 		D245A00125A54E5100B8E5BC /* GlobalParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = D245A00025A54E5100B8E5BC /* GlobalParameters.swift */; };
-		D2D39438231F540E00731347 /* JSONData.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D39437231F540E00731347 /* JSONData.swift */; };
+		D2D39438231F540E00731347 /* VideoSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D39437231F540E00731347 /* VideoSource.swift */; };
 		D2D3943A231F5DDA00731347 /* MovieListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D39439231F5DDA00731347 /* MovieListViewController.swift */; };
 		D2D3943E231F5E9800731347 /* MovieListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D3943C231F5E9700731347 /* MovieListCell.swift */; };
 		D2D3943F231F5E9800731347 /* MovieListCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D2D3943D231F5E9800731347 /* MovieListCell.xib */; };
@@ -81,7 +81,7 @@
 		D21F2F852318C7A800F7BCF3 /* AVPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVPlayerView.swift; sourceTree = "<group>"; };
 		D2239302233321EB00289464 /* UICollectionViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UICollectionViewExtension.swift; sourceTree = "<group>"; };
 		D245A00025A54E5100B8E5BC /* GlobalParameters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalParameters.swift; sourceTree = "<group>"; };
-		D2D39437231F540E00731347 /* JSONData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONData.swift; sourceTree = "<group>"; };
+		D2D39437231F540E00731347 /* VideoSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoSource.swift; sourceTree = "<group>"; };
 		D2D39439231F5DDA00731347 /* MovieListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieListViewController.swift; sourceTree = "<group>"; };
 		D2D3943C231F5E9700731347 /* MovieListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieListCell.swift; sourceTree = "<group>"; };
 		D2D3943D231F5E9800731347 /* MovieListCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MovieListCell.xib; sourceTree = "<group>"; };
@@ -201,7 +201,7 @@
 		D21F2F782318C33B00F7BCF3 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				D2D39437231F540E00731347 /* JSONData.swift */,
+				D2D39437231F540E00731347 /* VideoSource.swift */,
 				D2D39442231FB50E00731347 /* Cateogries.swift */,
 			);
 			path = Model;
@@ -499,7 +499,7 @@
 				D2D39443231FB50E00731347 /* Cateogries.swift in Sources */,
 				D21F2F862318C7A800F7BCF3 /* AVPlayerView.swift in Sources */,
 				D245A00125A54E5100B8E5BC /* GlobalParameters.swift in Sources */,
-				D2D39438231F540E00731347 /* JSONData.swift in Sources */,
+				D2D39438231F540E00731347 /* VideoSource.swift in Sources */,
 				D2D3943A231F5DDA00731347 /* MovieListViewController.swift in Sources */,
 				D2156E87231E02A30068230C /* BaseViewController.swift in Sources */,
 				D20F4379231CB51A00385297 /* Widget.swift in Sources */,

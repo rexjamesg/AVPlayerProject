@@ -32,7 +32,7 @@ class MovieListViewController: BaseViewController {
         
         flowLayout.estimatedItemSize = CGSize(width: width, height: height)
 
-        data = JSONData.getVideos()
+        data = VideoSource().getVideos()
 
         AppDelegate.AppUtility.lockOrientation(.portrait)
     }
@@ -89,6 +89,7 @@ extension MovieListViewController: UICollectionViewDelegate, UICollectionViewDat
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: identifierName, for: indexPath)
         
         if let cell = cell as? MovieListCell {
+            
             if let video = data?.getVideo(index: indexPath.row) {
                 cell.setUp(video: video)
             }

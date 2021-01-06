@@ -38,22 +38,3 @@ struct Video:Codable {
     var title:String?
 }
 
-extension Video {
-    
-    func getFullImagePath() -> String? {
-        
-        if thumb != nil {
-            return "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/"+thumb!
-        }
-        return nil
-    }
-    
-    func getImageUrl() -> URL? {
-        
-        if let urlString = getFullImagePath() {
-            
-            return URL.init(string: urlString)
-        }
-        return nil
-    }
-}

@@ -35,25 +35,19 @@ class MovieListCell: UICollectionViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
-        
+        // Initialization code        
         self.setCornerRadius(value: 5.0)
-        
     }
     
     func setUp(video:Video) {
-        
-        if let url = video.getImageUrl() {
-            
+        if let imagePath = video.thumb {
+            let url = URL.init(string: imagePath)
             imageView.kf.setImage(with: url)
         }
 
         movieTitle.text = video.title
-        
         movieSubtitle.text = video.subtitle
-        
         movieDescription.text = video.description
-        
     }
 
 }
