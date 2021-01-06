@@ -17,22 +17,18 @@ protocol AVPlayerViewDelegate:class {
      - Parameter time: 目前的時間
      */
     func didUpdatePlayerCurrentTime(_ player:AVPlayerView, time:Float64)
-    
     ///播放完畢
     func playerDidFinishPlaying(_ player:AVPlayerView)
-    
     /**
      開始與結束播放
      - Parameter isPlaying: 是否正在播放
      */
     func playerPlayAndPause(_ player:AVPlayerView, isPlaying:Bool)
-    
     /**
      接收到影片長度
      - Parameter time: 影片長度
      */
     func didReceiveTotalDuration(_ player:AVPlayerView, time:Float64)
-    
     ///觸摸播放器圖層
     //func didTouchPlayer(_ player:AVPlayerView)
     
@@ -48,11 +44,8 @@ protocol AVPlayerViewDelegate:class {
     
     ///快轉或倒轉
     func didRewindOrFastforward(_ player:AVPlayerView)
-    
-    
     ///播放器沒有緩衝
-    func playerPlaybackBufferEmpty(_ player:AVPlayerView)
-    
+    func playerPlaybackBufferEmpty(_ player:AVPlayerView)    
     ///緩衝足夠
     func playerPlaybackLikelyToKeepUp(_ player:AVPlayerView)
 }
@@ -105,20 +98,15 @@ class AVPlayerView: UIView {
     func setPlayer(urlSting:String) {
         
         let videoURL =  URL(string: urlSting)!
-        
         playerItem = AVPlayerItem(url: videoURL)
-        
         
         player = AVPlayer(playerItem: playerItem)
         
         avPlayerLayer = AVPlayerLayer(player: player)
-        
         avPlayerLayer.frame = self.bounds
-        
         self.layer.addSublayer(avPlayerLayer)
         
         addVideoObserver()
-        
         updatePlayerUI()
         
         
@@ -131,53 +119,33 @@ class AVPlayerView: UIView {
         player?.currentItem?.addObserver(self, forKeyPath: PlayerObserverKey.playbackBufferEmpty.rawValue, options: .new, context: nil)
         //緩衝足夠，手動播放
         player?.currentItem?.addObserver(self, forKeyPath: PlayerObserverKey.playbackLikelyToKeepUp.rawValue, options: .new, context: nil)
-        
     }
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         
         if keyPath == PlayerObserverKey.status.rawValue {
-            
             if let item:AVPlayerItem = object as? AVPlayerItem {
-             
                 if item.status == .readyToPlay {
-                    
                     play()
-                    
                     print("ready")
-                    
                 } else if item.status == .failed {
-                    
                     pause()
-                    
                     delegate?.playerDidReceiveFail(self)
-                    
                     print("AVPlayerStatusFailed")
-                    
                 } else {
-                    
                     delegate?.playerDidReceiveFail(self)
-                    
                     print("AVPlayerStatusUnknown")
                 }
             }
         
         } else if keyPath == PlayerObserverKey.loadedTimeRanges.rawValue {
-            
             setPlayerBuffer()
-            
         } else if keyPath == PlayerObserverKey.playbackBufferEmpty.rawValue {
-            
             print("playbackBufferEmpty")
-            
             delegate?.playerPlaybackBufferEmpty(self)
-            
         } else if keyPath == PlayerObserverKey.playbackLikelyToKeepUp.rawValue {
-            
             print("playbackLikelyToKeepUp")
-            
             delegate?.playerPlaybackLikelyToKeepUp(self)
-            
         }
     }
     
@@ -192,20 +160,14 @@ class AVPlayerView: UIView {
     private func setPlayerBuffer() {
         
         if let item = playerItem {
-         
-            //print("xxxx",CMTimeShow(availableDuration()))
-            
             let loadTimeArray = item.loadedTimeRanges
-            
             //取得緩衝區間
             if let newTimeRange : CMTimeRange = loadTimeArray.first as? CMTimeRange {
-                
                 let startSeconds = CMTimeGetSeconds(newTimeRange.start)
                 let durationSeconds = CMTimeGetSeconds(newTimeRange.duration)
                 let totalBuffer = startSeconds + durationSeconds//緩衝長度
                 
                 delegate?.playerBufferProgress(self, currentTime: totalBuffer, totalTime: CMTimeGetSeconds(item.asset.duration))
-                
                 //print("當前緩衝時間",totalBuffer)
             }
         }
@@ -215,7 +177,6 @@ class AVPlayerView: UIView {
     func resizeSubViews() {
         
         avPlayerLayer.frame = self.bounds
-
     }
     
     ///增加播放進度監聽
@@ -224,9 +185,7 @@ class AVPlayerView: UIView {
         player?.addPeriodicTimeObserver(forInterval: CMTimeMake(value: 1, timescale: 1), queue: .main, using: { (CMTime) in
 
             if self.player!.currentItem?.status == .readyToPlay {
-                
                 let currentTime = CMTimeGetSeconds(self.player!.currentTime())
-                
                 self.delegate?.didUpdatePlayerCurrentTime(self, time: currentTime)
             }
         })
@@ -239,31 +198,27 @@ class AVPlayerView: UIView {
         let duration = playerItem!.asset.duration
         //把 duration 轉為影片的總時間（秒數）。
         let seconds = CMTimeGetSeconds(duration)
-
         delegate?.didReceiveTotalDuration(self, time: seconds)
     }
     
     ///影片播放完畢
     @objc func playerDidFinishPlaying() {
-        
         pause()
-        
         print("Finished")
+        delegate?.playerDidFinishPlaying(self)
     }
     
     /**
      變更影片播放進度
-     - Parameter time: 應變更的進度
+     - Parameter time: 變更的進度
      */
     func changeCurrentTime(time: Float) {
         
         let seconds = Int64(time)
-        
         let targetTime:CMTime = CMTimeMake(value: seconds, timescale: 1)
         
         // 將當前設置時間設為播放時間
         player?.seek(to: targetTime)
-        
         pause()
     }
     
@@ -271,9 +226,7 @@ class AVPlayerView: UIView {
     func fastForward() {
      
         if let time = currentSecond {
-            
             changeCurrentTime(time: Float(time+5))
-            
             delegate?.didRewindOrFastforward(self)
         }
     }
@@ -282,9 +235,7 @@ class AVPlayerView: UIView {
     func rewind() {
      
         if let time = currentSecond {
-            
             changeCurrentTime(time: Float(time-5))
-            
             delegate?.didRewindOrFastforward(self)
         }
     }
@@ -293,9 +244,7 @@ class AVPlayerView: UIView {
     func play() {
         
         isPlaying = true
-        
         player?.play()
-        
         delegate?.playerPlayAndPause(self, isPlaying: isPlaying)
         
         print("play")
@@ -305,20 +254,19 @@ class AVPlayerView: UIView {
     func pause() {
         
         isPlaying = false
-        
         player?.pause()
-        
         delegate?.playerPlayAndPause(self, isPlaying: isPlaying)
-        
         print("pause")
-        
     }
     
-//    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-//
-//        delegate?.didTouchPlayer(self)
-//    }
-//
+    func replay() {
+        isPlaying = true
+        changeCurrentTime(time: 0)
+        player?.play()
+        delegate?.playerPlayAndPause(self, isPlaying: isPlaying)
+        print("replay")
+    }
+    
     func removeObserver() {
         
         /*

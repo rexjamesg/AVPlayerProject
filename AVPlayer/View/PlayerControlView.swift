@@ -15,25 +15,45 @@ protocol PlayerControlViewDelegate:class {
      - Parameter value:變更的時間
      */
     func playerControlView(_ controlView:PlayerControlView, timeSliderValueChange value:Float)
-    
-    ///播放按鈕功能
-    func playerControlViewPlayAction(_ controlView:PlayerControlView)
-    
-    ///快轉
-    func playerControlViewFastforward(_ controlView:PlayerControlView)
-    
-    ///回放
-    func playerControlViewRewind(_ controlView:PlayerControlView)
-    
-    ///橫式直式切換
-    func playerControlViewOrientationAction(_ controlView:PlayerControlView)
-    
-    ///手指離開滑桿
-    func playerControlViewEndChangeSliderValue(_ controlView:PlayerControlView)
+    /**
+     播放器控制列狀態
+     - Parameter isDisplayContolView: 顯示/隱藏
+     */
+    func playerControlView(isDisplayContolView:Bool)
+    /**
+     - Parameter controlView: 播放控制器
+     - Parameter status: 變更的狀態
+     */
+    func playerControlViewDidChange(_ controlView:PlayerControlView, status:PlayerControlView.PlayrControlStatus)
 }
 
 @IBDesignable
 class PlayerControlView: UIView {
+    
+    enum PlayrControlStatus {
+        ///播放
+        case play
+        ///暫停
+        case pause
+        ///快轉
+        case fastforward
+        ///倒轉
+        case rewind
+        ///重播
+        case replay
+        ///橫式/直式
+        case OrientationAction
+        ///調整滑桿進度
+        case playerControlViewEndChangeSliderValue
+    }
+    
+    enum ControlViewImage: String {
+        case pause = "baseline_pause_white"
+        case play = "baseline_play_arrow_white"
+        case replay = "round_replay_white"
+        case fullScreen = "baseline_fullscreen_white"
+        case fullScreenExit = "baseline_fullscreen_exit_white"
+    }
 
     weak var delegate:PlayerControlViewDelegate?
     
@@ -49,12 +69,8 @@ class PlayerControlView: UIView {
     @IBOutlet weak var indicator: UIActivityIndicatorView!
     @IBOutlet weak var controlStackView: UIStackView!
     
-    private var pauseImage:UIImage = UIImage.init(named: "baseline_pause_white")!
-    private var playImage:UIImage = UIImage.init(named: "baseline_play_arrow_white")!
-    private var fullScreenImage:UIImage = UIImage.init(named: "baseline_fullscreen_white")!
-    private var fullScreenExitImage:UIImage = UIImage.init(named: "baseline_fullscreen_exit_white")!
-    
     private var displayTimer:Timer?
+    private var shouldReplay:Bool = false
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -77,24 +93,22 @@ class PlayerControlView: UIView {
     func xibSetUp() {
         
         do {
-            
             let view = try loadNib(nibName: "PlayerControlView")
-            
             addSubview(view)
             
-            
             if let thumbImage:UIImage = UIImage(named: "sliderThumb") {
-                
                 durationSlider.setThumbImage(thumbImage, for: .normal )
             }
             
             setDisplayTimer()
             
         } catch {
-            
             print("error:\(error)")
         }
-        
+    }
+    
+    private func imageGenerator(controlViewImage:ControlViewImage) -> UIImage? {
+        return UIImage.init(named: controlViewImage.rawValue)
     }
     
     /**
@@ -102,11 +116,8 @@ class PlayerControlView: UIView {
      - Parameter time: 影片目前時間
      */
     func updateCurrentTime(time:Float64) {
-        
-        currentimLabel.text = Widget.formatConversion(time: time)
-        
+        currentimLabel.text = Widget.formatConversion(time: time)        
         durationSlider.value = Float(time)
-        
     }
     
     /**
@@ -116,15 +127,12 @@ class PlayerControlView: UIView {
     func setTotalTime(time:Float64) {
                 
         totalTimeLabel.text = Widget.formatConversion(time: time)
-        
         durationSlider.minimumValue = 0
-        
         durationSlider.maximumValue = Float(time)
-        
         durationSlider.value = 0
-        
         durationSlider.isContinuous = true
-
+        
+        print("durationSlider.maximumValue",durationSlider.maximumValue)
     }
     
     /**
@@ -135,9 +143,7 @@ class PlayerControlView: UIView {
     func setProcessViewValue(current:Float64, total:Float64) {
      
         let progress:Float = Float(current/total)
-        
         playerProgressView.setProgress(progress, animated: false)
-        
     }
     
     /**
@@ -146,15 +152,13 @@ class PlayerControlView: UIView {
      */
     func setOrientationButtonImage(isLandscape:Bool) {
         
+        var image = imageGenerator(controlViewImage: .fullScreen)
+        
         if isLandscape {
-            
-            orientationButton.setImage(fullScreenExitImage, for: .normal)
-            
-        } else {
-            
-            orientationButton.setImage(fullScreenImage, for: .normal)
+            image = imageGenerator(controlViewImage: .fullScreenExit)
         }
         
+        orientationButton.setImage(image, for: .normal)
         setDisplayTimer()
     }
     
@@ -164,37 +168,39 @@ class PlayerControlView: UIView {
      */
     func setPlayButton(isPlaying:Bool) {
         
+        var title = "播放"
+        var image = imageGenerator(controlViewImage: .play)
+        
         if isPlaying {
-            
-            playButton.setTitle("暫停", for: .normal)
-            
-            playButton.setImage(pauseImage, for: .normal)
+            title = "暫停"
+            image = imageGenerator(controlViewImage: .pause)
             
             setDisplayTimer()
-            
-        } else {
-            
-            playButton.setTitle("播放", for: .normal)
-            
-            playButton.setImage(playImage, for: .normal)
         }
         
+        playButton.setTitle(title, for: .normal)
+        playButton.setImage(image, for: .normal)
+        
+    }
+    
+    func setReplayButton() {
+        shouldReplay = true
+        playButton.setTitle("重播", for: .normal)
+        playButton.setImage(imageGenerator(controlViewImage: .replay), for: .normal)
     }
     
     ///隱藏播放控制view
     func hide() {
-        
+        delegate?.playerControlView(isDisplayContolView: false)
         UIView.animate(withDuration: 0.3) {
-            
             self.alpha = 0
         }
     }
     
     ///顯示播放view
     func show() {
-        
+        delegate?.playerControlView(isDisplayContolView: true)
         UIView.animate(withDuration: 0.3) {
-            
             self.alpha = 1
         }
     }
@@ -203,11 +209,8 @@ class PlayerControlView: UIView {
     private func setDisplayTimer() {
         
         displayTimer?.invalidate()
-        
         displayTimer = Timer.scheduledTimer(withTimeInterval: 3, repeats: false, block: { (timer) in
-            
             self.hide()
-            
             self.displayTimer?.invalidate()
         })
     }
@@ -225,37 +228,29 @@ class PlayerControlView: UIView {
     @IBAction func currentTimeSliderAction(_ sender: Any) {
         
         if let slider = sender as? UISlider {
-            
             displayTimer?.invalidate()
-            
             delegate?.playerControlView(self, timeSliderValueChange: slider.value)
-            
         }
     }
     
     ///直式橫式切換
     @IBAction func orientationAction(_ sender: Any) {
-        
-        delegate?.playerControlViewOrientationAction(self)
+                
+        delegate?.playerControlViewDidChange(self, status: .OrientationAction)
     }
     
     @IBAction func sliderEndChangeInside(_ sender: Any) {
         
         print("end")
-        
         setDisplayTimer()
-        
-        delegate?.playerControlViewEndChangeSliderValue(self)
+        delegate?.playerControlViewDidChange(self, status: .playerControlViewEndChangeSliderValue)
     }
     
     @IBAction func sliderEndChangeOutside(_ sender: Any) {
         
         print("end")
-        
         setDisplayTimer()
-        
-        delegate?.playerControlViewEndChangeSliderValue(self)
-        
+        delegate?.playerControlViewDidChange(self, status: .playerControlViewEndChangeSliderValue)
     }
     
     ///播放
@@ -263,37 +258,28 @@ class PlayerControlView: UIView {
         
         print("playAction")
         
-        delegate?.playerControlViewPlayAction(self)
+        if shouldReplay {
+            delegate?.playerControlViewDidChange(self, status: .replay)
+        } else {
+            delegate?.playerControlViewDidChange(self, status: .play)
+        }
     }
     
     ///快轉
     @IBAction func fastForwardAction(_ sender: Any) {
         
-        print("fastForwardAction")
-        
+        print("fastForwardAction")        
         setDisplayTimer()
-        
-        delegate?.playerControlViewFastforward(self)
+        delegate?.playerControlViewDidChange(self, status: .fastforward)
     }
     
     ///回放
     @IBAction func rewindAction(_ sender: Any) {
         
         print("rewindAction")
-        
         setDisplayTimer()
-        
-        delegate?.playerControlViewRewind(self)
+        delegate?.playerControlViewDidChange(self, status: .rewind)
     }
-    
-//    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-//        
-//        if let _ = touches.first?.location(in: baseView) {
-//            
-//            hide()
-//        }
-//        
-//    }
     
     /*
     // Only override draw() if you perform custom drawing.

@@ -10,11 +10,13 @@ import UIKit
 import AVKit
 import AVFoundation
 
-class PlayerViewController: BaseViewController, AVPlayerViewDelegate, PlayerControlViewDelegate{
+class PlayerViewController: BaseViewController, AVPlayerViewDelegate{
 
     var player:AVPlayerView = AVPlayerView()
-    
     var playerControlView:PlayerControlView = PlayerControlView()
+    var playerCoverView:UIView = UIView()
+    let totalPadding:CGFloat = TOP_PADDING+BOTTOM_PADDING
+    var indicatorView: UIActivityIndicatorView = UIActivityIndicatorView.init(style: .whiteLarge)    
     
     @IBOutlet weak var backButton: UIButton!
     
@@ -29,6 +31,10 @@ class PlayerViewController: BaseViewController, AVPlayerViewDelegate, PlayerCont
         // Do any additional setup after loading the view.
      
         AppDelegate.AppUtility.lockOrientation(.allButUpsideDown)
+        
+        indicatorView.startAnimating()
+        indicatorView.center = view.center
+        view.addSubview(indicatorView)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -40,25 +46,27 @@ class PlayerViewController: BaseViewController, AVPlayerViewDelegate, PlayerCont
         
         //在影片讀取之前就要把控制UI實作
         playerControlView = PlayerControlView.init(frame: player.bounds)
-        
         player.delegate = self
-        
         view.addSubview(player)
         
         if let path = video?.sources {
-            
             player.setPlayer(urlSting: path)
         }
         
+        initPlayerCoverView()
         
         playerControlView.delegate = self
-        
         player.addSubview(playerControlView)
-        
         player.bringSubviewToFront(playerControlView)
         
-        
         setTapGestures()
+    }
+    
+    private func initPlayerCoverView() {
+        playerCoverView = UIView.init(frame: CGRect.init(x: 0, y: 0, width: player.frame.size.width, height: player.frame.size.height))
+        playerCoverView.backgroundColor = .black
+        playerCoverView.alpha = 0.3
+        player.addSubview(playerCoverView)
     }
     
     private func setTapGestures() {
@@ -87,75 +95,54 @@ class PlayerViewController: BaseViewController, AVPlayerViewDelegate, PlayerCont
     }
 
     @objc func playerSingleTapAction () {
-        
         playerControlView.show()
-        
     }
     
     @objc func playerDoubleTapAction (sender:UITapGestureRecognizer) {
-        
         doubleTapAction(sender: sender)
     }
     
     @objc func playerControlSingleTapAction () {
-        
         playerControlView.hide()
     }
     
     @objc func playerControlDoubleTapAction (sender:UITapGestureRecognizer) {
-        
         doubleTapAction(sender: sender)
     }
     
     private func doubleTapAction(sender:UITapGestureRecognizer) {
-        
         let point = sender.location(in: view)
-        
         if point.x > view.frame.size.width/2 {
-            
             WaveView.waveAnimate(view: player, position: CGPoint.init(x: player.frame.size.width/4*3, y: player.frame.size.height/2))
-            
             player.fastForward()
-            
         } else {
-            
             WaveView.waveAnimate(view: player, position: CGPoint.init(x: player.frame.size.width/4, y: player.frame.size.height/2))
-            
             player.rewind()
-            
         }
     }
     
     private func setResizedFrame() {
         
         var width = view.frame.size.width
-        
         var height = view.frame.size.height
-        
         if view.frame.size.width > view.frame.size.height {
-            
             width = view.frame.size.height
-            
             height = view.frame.size.width
-            
         }
         
         if isLandscape {
-            
             print("Landscape")
-            
             player.frame = CGRect.init(x: 0, y: 0, width: height, height: width)
-            
+            playerCoverView.frame = CGRect.init(x: 0, y: 0, width: height, height: width)
+            playerControlView.frame = CGRect.init(x: 0, y: 0, width: height-TOP_PADDING, height: width-BOTTOM_PADDING)
+            playerControlView.center = player.center
         } else {
-            
             print("Portrait")
-            
             let playerHeight = width/16*9
-            
             player.frame = CGRect.init(x: 0, y: height/2-playerHeight/2, width: width, height: playerHeight)
+            playerCoverView.frame = CGRect.init(x: 0, y: 0, width: width, height: height)
+            playerControlView.frame = CGRect.init(x: 0, y: 0, width: player.frame.size.width, height: player.frame.size.height)
         }
-        
-        playerControlView.frame = player.bounds
     }
     
     ///偵測螢幕自動轉向
@@ -163,132 +150,130 @@ class PlayerViewController: BaseViewController, AVPlayerViewDelegate, PlayerCont
         super.willTransition(to: newCollection, with: coordinator)
         
         setResizedFrame()
-        
         player.resizeSubViews()
-        
         playerControlView.setOrientationButtonImage(isLandscape: isLandscape)
     }
     
     //MARK: ----- AVPlayerViewDelegate -----
     func playerDidReceiveFail(_ player:AVPlayerView) {
-    
         presentAlert(title: "讀取失敗", message: nil, alertType: .normal, handler: nil)
     }
     
     func didUpdatePlayerCurrentTime(_ player:AVPlayerView, time: Float64) {
-        
         playerControlView.updateCurrentTime(time: time)
-        
     }
     
     func playerBufferProgress(_ player:AVPlayerView, currentTime: Float64, totalTime: Float64) {
-        
         playerControlView.setProcessViewValue(current: currentTime, total: totalTime)
-        
     }
     
     func playerDidFinishPlaying(_ player:AVPlayerView) {
-        
+        playerControlView.show()
+        playerControlView.setReplayButton()
         print("finish")
-        
     }
     
     func playerPlaybackBufferEmpty(_ player: AVPlayerView) {
-        
         playerControlView.setIndicator(isLoading: true)
     }
     
     func playerPlaybackLikelyToKeepUp(_ player: AVPlayerView) {
-        
         playerControlView.setIndicator(isLoading: false)
     }
     
     func playerPlayAndPause(_ player:AVPlayerView, isPlaying: Bool) {
-                
         print("isPlaying",isPlaying)
-        
         playerControlView.setPlayButton(isPlaying: isPlaying)
-        
         playerControlView.setIndicator(isLoading: false)
     }
     
     func didReceiveTotalDuration(_ player:AVPlayerView, time: Float64) {
-    
         print("didReceiveTotalDuration",time)
-        
         playerControlView.setTotalTime(time: time)
-    
     }
     
     func didTouchPlayer(_ player:AVPlayerView) {
-        
         playerControlView.show()
     }
     
     func didRewindOrFastforward(_ player:AVPlayerView) {
-        
         player.play()
-    }
-    
-    //MARK: ----- PlayerControlViewDelegate -----
-    func playerControlView(_ controlView:PlayerControlView, timeSliderValueChange value: Float) {
-        
-        print("didChangeCurrentTime")
-        
-        player.changeCurrentTime(time: value)
-    }
-    
-    func playerControlViewPlayAction(_ controlView: PlayerControlView) {
-        
-        controlView.setPlayButton(isPlaying: player.isPlaying)
-        
-        if player.isPlaying {
-            
-            player.pause()
-            
-        } else {
-            
-            player.play()
-        }
-    }
-    
-    func playerControlViewFastforward(_ controlView:PlayerControlView) {
-        player.fastForward()
-    }
-    
-    
-    func playerControlViewRewind(_ controlView:PlayerControlView) {
-        player.rewind()
-    }
-    
-    func playerControlViewEndChangeSliderValue(_ controlView:PlayerControlView) {
-        player.play()
-    }
-    
-    func playerControlViewOrientationAction(_ controlView:PlayerControlView) {
-        
-        var value:Int = UIInterfaceOrientation.landscapeLeft.rawValue
-        
-        if UIApplication.shared.statusBarOrientation == .landscapeLeft ||  UIApplication.shared.statusBarOrientation == .landscapeRight {
-            
-            value = UIInterfaceOrientation.portrait.rawValue
-        }
-        
-        UIDevice.current.setValue(value, forKey: "orientation")
-        UIViewController.attemptRotationToDeviceOrientation()
     }
     
     @IBAction func backAction(_ sender: Any) {
-        
         player.removeObserver()
-        
         dismiss(animated: true, completion: nil)
     }
     
     deinit {
-        
         print("deinit")
+    }
+}
+
+//MARK: - PlayerControlViewDelegate
+extension PlayerViewController: PlayerControlViewDelegate {
+
+    func playerControlViewDidChange(_ controlView:PlayerControlView, status: PlayerControlView.PlayrControlStatus) {
+        switch status {
+        case .play:
+            controlView.setPlayButton(isPlaying: player.isPlaying)
+            
+            if player.isPlaying {
+                player.pause()
+            } else {
+                player.play()
+            }
+            break
+            
+        case .pause:
+            break
+            
+        case .fastforward:
+            player.fastForward()
+            break
+            
+        case .rewind:
+            player.rewind()
+            break
+            
+        case .playerControlViewEndChangeSliderValue:
+            player.play()
+            break
+            
+        case .OrientationAction:
+            var value:Int = UIInterfaceOrientation.landscapeLeft.rawValue
+            
+            if UIApplication.shared.statusBarOrientation == .landscapeLeft ||  UIApplication.shared.statusBarOrientation == .landscapeRight {
+                
+                value = UIInterfaceOrientation.portrait.rawValue
+            }
+            
+            UIDevice.current.setValue(value, forKey: "orientation")
+            UIViewController.attemptRotationToDeviceOrientation()
+            break
+            
+        case .replay:
+            player.replay()
+            break
+        }
+    }
+    
+    
+    func playerControlView(isDisplayContolView: Bool) {
+         
+        var viewAlpha:CGFloat = 0
+        if isDisplayContolView {
+            viewAlpha = 0.3
+        }
         
+        UIView.animate(withDuration: 0.3) {
+            self.playerCoverView.alpha = viewAlpha
+        }
+    }
+    
+    func playerControlView(_ controlView:PlayerControlView, timeSliderValueChange value: Float) {
+        print("didChangeCurrentTime")
+        player.changeCurrentTime(time: value)
     }
 }
 

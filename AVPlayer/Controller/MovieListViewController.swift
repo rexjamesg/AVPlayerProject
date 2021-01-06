@@ -8,12 +8,11 @@
 
 import UIKit
 
-class MovieListViewController: BaseViewController, UICollectionViewDelegate, UICollectionViewDataSource {
-    //,UIPopoverPresentationControllerDelegate
+class MovieListViewController: BaseViewController {
     
-    @IBOutlet weak var listCollectionView: UICollectionView!
-    
+    @IBOutlet weak var listCollectionView: UICollectionView!    
     @IBOutlet weak var flowLayout: UICollectionViewFlowLayout!
+    var identifierName:String = "MovieListCell"
     
     var data:Categories?
     
@@ -22,8 +21,8 @@ class MovieListViewController: BaseViewController, UICollectionViewDelegate, UIC
 
         // Do any additional setup after loading the view.
         
-        let cellNib = UINib.init(nibName: "MovieListCell", bundle: nil)
-        listCollectionView.register(cellNib, forCellWithReuseIdentifier: "MovieListCell")
+        let cellNib = UINib.init(nibName: identifierName, bundle: nil)
+        listCollectionView.register(cellNib, forCellWithReuseIdentifier: identifierName)
         
         listCollectionView.delegate = self
         listCollectionView.dataSource = self
@@ -39,62 +38,23 @@ class MovieListViewController: BaseViewController, UICollectionViewDelegate, UIC
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        
-        
+                
     }
     
     func reloadData() {
-                
         listCollectionView.reloadData()
     }
     
-    //MARK: ----- UICollectionViewDelegate & UICollectionViewDataSource -----
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        
-        if let count = data?.count {
-            
-            return count
-        }
-        
-        return 0
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MovieListCell", for: indexPath)
-        
-        if let cell = cell as? MovieListCell {
-            
-            if let video = data?.getVideo(index: indexPath.row) {
-             
-                cell.setUp(video: video)
-            }
-        }
-        
-        return cell
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    func presentPlayerController(video:Video) {
         
         let stroyboard = UIStoryboard.init(name: "Main", bundle: nil)
         
         if let playerVC = stroyboard.instantiateViewController(withIdentifier: "PlayerViewController") as? PlayerViewController {
-            
-            let cell = collectionView.cellForItem(at: indexPath) as? MovieListCell
-            
-            cell?.selectedAnimation {
-                
-                if let video = self.data?.getVideo(index: indexPath.row) {
-                    
-                    playerVC.video = video
-
-                    self.present(playerVC, animated: true, completion: nil)
-                }
-            }
+            playerVC.video = video
+            playerVC.modalPresentationStyle = .overFullScreen
+            self.present(playerVC, animated: true, completion: nil)
         }
     }
-    
-    
     
     // MARK: - Navigation
     // In a storyboard-based application, you will often want to do a little preparation before navigation
@@ -111,4 +71,40 @@ class MovieListViewController: BaseViewController, UICollectionViewDelegate, UIC
     }
     */
 
+}
+
+extension MovieListViewController: UICollectionViewDelegate, UICollectionViewDataSource{
+    //MARK: ----- UICollectionViewDelegate & UICollectionViewDataSource -----
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        
+        if let count = data?.count {
+            return count
+        }
+        
+        return 0
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: identifierName, for: indexPath)
+        
+        if let cell = cell as? MovieListCell {
+            if let video = data?.getVideo(index: indexPath.row) {
+                cell.setUp(video: video)
+            }
+        }
+        
+        return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
+        let cell = collectionView.cellForItem(at: indexPath) as? MovieListCell
+        
+        cell?.selectedAnimation { [self] in
+            if let video = self.data?.getVideo(index: indexPath.row) {
+                presentPlayerController(video: video)
+            }
+        }
+    }
 }

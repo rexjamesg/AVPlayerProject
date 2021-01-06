@@ -25,9 +25,7 @@ class WaveView: UIView, CAAnimationDelegate {
     class func waveAnimate(view:UIView, position:CGPoint) {
         
         let waveView = WaveView.init(frame: CGRect.init(x: position.x, y: position.y, width: view.frame.size.width, height: view.frame.size.width))
-        
-        view.addSubview(waveView)
-        
+        view.addSubview(waveView)        
         waveView.createPulse()
     }
     
