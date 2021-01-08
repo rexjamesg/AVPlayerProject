@@ -108,8 +108,7 @@ extension VideoSourceType {
             return "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4"
             
         case .whatCareCanYouGetForAGrand:
-            return "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WhatCarCanYouGetForAGrand.mp4"
-            
+            return "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WhatCarCanYouGetForAGrand.mp4"            
         }
     }
     
@@ -153,7 +152,6 @@ extension VideoSourceType {
             
         case .whatCareCanYouGetForAGrand:
             return "By Garage419"
-            
         }
     }
     
@@ -197,7 +195,6 @@ extension VideoSourceType {
             
         case .whatCareCanYouGetForAGrand:
             return "images/WhatCarCanYouGetForAGrand.jpg"
-            
         }
     }
     
@@ -267,7 +264,7 @@ class VideoSource: NSObject {
         }
     }
     
-    func getVideos() -> Categories { 
+    func getVideos() -> Categories {
         return Categories.init(name: "Movies", videos: videos)
     }
 }
