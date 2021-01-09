@@ -66,7 +66,7 @@ class AVPlayerView: UIView {
     var playerItem:AVPlayerItem?
     var asset:AVURLAsset!
     var isPlaying:Bool = false
-
+    var timeObserverToken: Any?
     private var playerItemContext = 0
 
     var currentSecond:Float64? {
@@ -181,8 +181,7 @@ class AVPlayerView: UIView {
     
     ///增加播放進度監聽
     func addVideoObserver() {
-        
-        player?.addPeriodicTimeObserver(forInterval: CMTimeMake(value: 1, timescale: 1), queue: .main, using: { (CMTime) in
+        timeObserverToken = player?.addPeriodicTimeObserver(forInterval: CMTimeMake(value: 1, timescale: 1), queue: .main, using: { (CMTime) in
 
             if self.player!.currentItem?.status == .readyToPlay {
                 let currentTime = CMTimeGetSeconds(self.player!.currentTime())
@@ -279,12 +278,23 @@ class AVPlayerView: UIView {
         
         player?.removeTimeObserver(self)
         */
+        
+        if let timeObserverToken = timeObserverToken {
+            player?.removeTimeObserver(timeObserverToken)
+            self.timeObserverToken = nil
+        }
+        
+        player = nil
+        
         if avPlayerLayer != nil {
             
             avPlayerLayer.removeFromSuperlayer()
             avPlayerLayer = nil
         }
-        
+    }
+    
+    deinit {
+        removeObserver()
     }
     
     /*

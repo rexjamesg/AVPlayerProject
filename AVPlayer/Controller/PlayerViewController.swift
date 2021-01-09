@@ -207,6 +207,7 @@ class PlayerViewController: BaseViewController, AVPlayerViewDelegate{
     
     deinit {
         print("deinit")
+        player.removeFromSuperview()
     }
 }
 
