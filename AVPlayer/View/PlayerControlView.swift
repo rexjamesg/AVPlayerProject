@@ -85,13 +85,11 @@ class PlayerControlView: UIView {
     }
     
     override func prepareForInterfaceBuilder() {
-        super.prepareForInterfaceBuilder()
-        
+        super.prepareForInterfaceBuilder()        
         xibSetUp()
     }
     
     func xibSetUp() {
-        
         do {
             let view = try loadNib(nibName: "PlayerControlView")
             addSubview(view)
@@ -99,9 +97,7 @@ class PlayerControlView: UIView {
             if let thumbImage:UIImage = UIImage(named: "sliderThumb") {
                 durationSlider.setThumbImage(thumbImage, for: .normal )
             }
-            
             setDisplayTimer()
-            
         } catch {
             print("error:\(error)")
         }
@@ -216,7 +212,6 @@ class PlayerControlView: UIView {
     }
     
     func setIndicator(isLoading:Bool) {
-        
         if isLoading {            
             indicator.startAnimating()
         } else {
@@ -240,24 +235,17 @@ class PlayerControlView: UIView {
     }
     
     @IBAction func sliderEndChangeInside(_ sender: Any) {
-        
-        print("end")
         setDisplayTimer()
         delegate?.playerControlViewDidChange(self, status: .playerControlViewEndChangeSliderValue)
     }
     
     @IBAction func sliderEndChangeOutside(_ sender: Any) {
-        
-        print("end")
         setDisplayTimer()
         delegate?.playerControlViewDidChange(self, status: .playerControlViewEndChangeSliderValue)
     }
     
     ///播放
     @IBAction func playAction(_ sender: Any) {
-        
-        print("playAction")
-        
         if shouldReplay {
             delegate?.playerControlViewDidChange(self, status: .replay)
         } else {
@@ -267,16 +255,12 @@ class PlayerControlView: UIView {
     
     ///快轉
     @IBAction func fastForwardAction(_ sender: Any) {
-        
-        print("fastForwardAction")        
         setDisplayTimer()
         delegate?.playerControlViewDidChange(self, status: .fastforward)
     }
     
     ///回放
     @IBAction func rewindAction(_ sender: Any) {
-        
-        print("rewindAction")
         setDisplayTimer()
         delegate?.playerControlViewDidChange(self, status: .rewind)
     }

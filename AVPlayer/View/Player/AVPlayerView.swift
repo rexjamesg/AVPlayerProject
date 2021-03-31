@@ -13,28 +13,22 @@ import AVFoundation
 protocol AVPlayerViewDelegate:class {
     
     /**
+     播放器讀取狀態
+     */
+    func playerLoadStatus(_ player:AVPlayerView, status:AVPlayerView.PlayeLoadStatus)
+    
+    /**
      更新影片目前時間
      - Parameter time: 目前的時間
      */
     func didUpdatePlayerCurrentTime(_ player:AVPlayerView, time:Float64)
-    ///播放完畢
-    func playerDidFinishPlaying(_ player:AVPlayerView)
-    /**
-     開始與結束播放
-     - Parameter isPlaying: 是否正在播放
-     */
-    func playerPlayAndPause(_ player:AVPlayerView, isPlaying:Bool)
+    
     /**
      接收到影片長度
      - Parameter time: 影片長度
      */
     func didReceiveTotalDuration(_ player:AVPlayerView, time:Float64)
-    ///觸摸播放器圖層
-    //func didTouchPlayer(_ player:AVPlayerView)
-    
-    ///播放失敗
-    func playerDidReceiveFail(_ player:AVPlayerView)
-    
+        
     /**
      影片緩衝進度
      - Parameter currentTime: 緩衝目前進度
@@ -42,42 +36,74 @@ protocol AVPlayerViewDelegate:class {
      */
     func playerBufferProgress(_ player:AVPlayerView, currentTime:Float64, totalTime:Float64)
     
-    ///快轉或倒轉
-    func didRewindOrFastforward(_ player:AVPlayerView)
-    ///播放器沒有緩衝
-    func playerPlaybackBufferEmpty(_ player:AVPlayerView)    
-    ///緩衝足夠
-    func playerPlaybackLikelyToKeepUp(_ player:AVPlayerView)
+    /**
+    播放器可以繼續播放
+     */
+    func playbackLikelyToKeepUp(_ player:AVPlayerView, keepUp:Bool)
+    
+    /**
+    播放器播放狀態有變更
+     */
+    func playerPlayStatusDidChange(_ player:AVPlayerView, status:AVPlayerView.PlayerPlayStatus)
 }
 
 class AVPlayerView: UIView {
+    
+    enum PlayeLoadStatus {
+        case ready
+        case fail
+    }
 
+    ///播放器裝態監聽的列舉
     enum PlayerObserverKey:String {
         case status
         case loadedTimeRanges
+        ///播放器沒有緩衝
         case playbackBufferEmpty
+        ///緩衝足夠
         case playbackLikelyToKeepUp
     }
     
+    enum PlayerPlayStatus {
+        ///播放
+        case play
+        ///暫停
+        case pause
+        ///重播
+        case replay
+        ///播放結束
+        case finish
+        ///倒轉
+        case rewind
+        ///快轉
+        case fastForward
+    }
+    
+    ///代理
     weak var delegate:AVPlayerViewDelegate?
     
+    ///播放器
     var player : AVPlayer?
+    
+    ///播放影片時所需定義的畫面介面
     var avPlayerLayer : AVPlayerLayer!
+    
+    ///影片播放的元素（可以更深入取得影片細部資訊）
     var playerItem:AVPlayerItem?
-    var asset:AVURLAsset!
+    
+    ///是否正在播放
     var isPlaying:Bool = false
+    
+    ///定期時間觀察者
     var timeObserverToken: Any?
-    private var playerItemContext = 0
-
+    
+    ///目前播放的時間
     var currentSecond:Float64? {
-        
         if let time = player?.currentItem?.currentTime() {
-            
             return CMTimeGetSeconds(time)
         }
         
         return nil
-        
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -96,29 +122,33 @@ class AVPlayerView: UIView {
      - Parameter urlString: 影片路徑、網址
      */
     func setPlayer(urlSting:String) {
+        //AVPlayerItem設定影片路徑->AVPlayerItem影片播放元素給AVPlayer初始化->交給AVPLayerLayer設定播放畫面
         
-        let videoURL =  URL(string: urlSting)!
-        playerItem = AVPlayerItem(url: videoURL)
-        
-        player = AVPlayer(playerItem: playerItem)
-        
-        avPlayerLayer = AVPlayerLayer(player: player)
-        avPlayerLayer.frame = self.bounds
-        self.layer.addSublayer(avPlayerLayer)
-        
-        addVideoObserver()
-        updatePlayerUI()
-        
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(playerDidFinishPlaying), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
-        
-        player?.currentItem?.addObserver(self, forKeyPath: PlayerObserverKey.status.rawValue, options: .new, context: nil)
-        //緩衝，可用來獲取快取存了多少
-        player?.currentItem?.addObserver(self, forKeyPath: PlayerObserverKey.loadedTimeRanges.rawValue, options: .new, context: nil)
-        //緩衝不夠，停止播放
-        player?.currentItem?.addObserver(self, forKeyPath: PlayerObserverKey.playbackBufferEmpty.rawValue, options: .new, context: nil)
-        //緩衝足夠，手動播放
-        player?.currentItem?.addObserver(self, forKeyPath: PlayerObserverKey.playbackLikelyToKeepUp.rawValue, options: .new, context: nil)
+        if let videoURL =  URL(string: urlSting) {
+            playerItem = AVPlayerItem(url: videoURL)
+            
+            player = AVPlayer(playerItem: playerItem)
+            
+            avPlayerLayer = AVPlayerLayer(player: player)
+            avPlayerLayer.frame = self.bounds
+            self.layer.addSublayer(avPlayerLayer)
+            
+            addVideoObserver()
+            updatePlayerUI()
+            
+            //監聽播放結束
+            NotificationCenter.default.addObserver(self, selector: #selector(playerDidFinishPlaying), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
+            
+            
+            //以下為監聽播放器狀態
+            player?.currentItem?.addObserver(self, forKeyPath: PlayerObserverKey.status.rawValue, options: .new, context: nil)
+            //緩衝，可用來獲取快取存了多少
+            player?.currentItem?.addObserver(self, forKeyPath: PlayerObserverKey.loadedTimeRanges.rawValue, options: .new, context: nil)
+            //緩衝不夠，停止播放
+            player?.currentItem?.addObserver(self, forKeyPath: PlayerObserverKey.playbackBufferEmpty.rawValue, options: .new, context: nil)
+            //緩衝足夠，手動播放
+            player?.currentItem?.addObserver(self, forKeyPath: PlayerObserverKey.playbackLikelyToKeepUp.rawValue, options: .new, context: nil)
+        }
     }
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
@@ -126,26 +156,26 @@ class AVPlayerView: UIView {
         if keyPath == PlayerObserverKey.status.rawValue {
             if let item:AVPlayerItem = object as? AVPlayerItem {
                 if item.status == .readyToPlay {
-                    play()
-                    print("ready")
+                    delegate?.playerLoadStatus(self, status: .ready)
                 } else if item.status == .failed {
-                    pause()
-                    delegate?.playerDidReceiveFail(self)
+                    delegate?.playerLoadStatus(self, status: .fail)
                     print("AVPlayerStatusFailed")
                 } else {
-                    delegate?.playerDidReceiveFail(self)
+                    delegate?.playerLoadStatus(self, status: .fail)
                     print("AVPlayerStatusUnknown")
                 }
             }
         
         } else if keyPath == PlayerObserverKey.loadedTimeRanges.rawValue {
             setPlayerBuffer()
+            
         } else if keyPath == PlayerObserverKey.playbackBufferEmpty.rawValue {
-            print("playbackBufferEmpty")
-            delegate?.playerPlaybackBufferEmpty(self)
+            
         } else if keyPath == PlayerObserverKey.playbackLikelyToKeepUp.rawValue {
-            print("playbackLikelyToKeepUp")
-            delegate?.playerPlaybackLikelyToKeepUp(self)
+                        
+            if let keepUp = playerItem?.isPlaybackLikelyToKeepUp {
+                delegate?.playbackLikelyToKeepUp(self, keepUp: keepUp)
+            }
         }
     }
     
@@ -161,21 +191,18 @@ class AVPlayerView: UIView {
         
         if let item = playerItem {
             let loadTimeArray = item.loadedTimeRanges
-            //取得緩衝區間
             if let newTimeRange : CMTimeRange = loadTimeArray.first as? CMTimeRange {
                 let startSeconds = CMTimeGetSeconds(newTimeRange.start)
                 let durationSeconds = CMTimeGetSeconds(newTimeRange.duration)
                 let totalBuffer = startSeconds + durationSeconds//緩衝長度
                 
                 delegate?.playerBufferProgress(self, currentTime: totalBuffer, totalTime: CMTimeGetSeconds(item.asset.duration))
-                //print("當前緩衝時間",totalBuffer)
             }
         }
     }
     
     ///直式橫式切換時，更新UI
     func resizeSubViews() {
-        
         avPlayerLayer.frame = self.bounds
     }
     
@@ -204,7 +231,7 @@ class AVPlayerView: UIView {
     @objc func playerDidFinishPlaying() {
         pause()
         print("Finished")
-        delegate?.playerDidFinishPlaying(self)
+        delegate?.playerPlayStatusDidChange(self, status: .finish)
     }
     
     /**
@@ -222,30 +249,26 @@ class AVPlayerView: UIView {
     }
     
     ///快轉
-    func fastForward() {
-     
+    func fastForward(shiftTime:Int) {
         if let time = currentSecond {
-            changeCurrentTime(time: Float(time+5))
-            delegate?.didRewindOrFastforward(self)
+            changeCurrentTime(time: Float(time)+Float(shiftTime))
+            delegate?.playerPlayStatusDidChange(self, status: .fastForward)
         }
     }
     
     ///回放
-    func rewind() {
-     
+    func rewind(shiftTime:Int) {
         if let time = currentSecond {
-            changeCurrentTime(time: Float(time-5))
-            delegate?.didRewindOrFastforward(self)
+            changeCurrentTime(time: Float(time)-Float(shiftTime))
+            delegate?.playerPlayStatusDidChange(self, status: .rewind)
         }
     }
     
     ///播放
     func play() {
-        
         isPlaying = true
         player?.play()
-        delegate?.playerPlayAndPause(self, isPlaying: isPlaying)
-        
+        delegate?.playerPlayStatusDidChange(self, status: .play)
         print("play")
     }
     
@@ -254,7 +277,7 @@ class AVPlayerView: UIView {
         
         isPlaying = false
         player?.pause()
-        delegate?.playerPlayAndPause(self, isPlaying: isPlaying)
+        delegate?.playerPlayStatusDidChange(self, status: .pause)
         print("pause")
     }
     
@@ -262,22 +285,11 @@ class AVPlayerView: UIView {
         isPlaying = true
         changeCurrentTime(time: 0)
         player?.play()
-        delegate?.playerPlayAndPause(self, isPlaying: isPlaying)
+        delegate?.playerPlayStatusDidChange(self, status: .replay)
         print("replay")
     }
     
-    func removeObserver() {
-        
-        /*
-        NotificationCenter.default.removeObserver(self, forKeyPath: NSNotification.Name.AVPlayerItemDidPlayToEndTime.rawValue)
-        
-        player?.currentItem?.removeObserver(self, forKeyPath: PlayerObserverKey.status.rawValue)
-        player?.currentItem?.removeObserver(self, forKeyPath: PlayerObserverKey.loadedTimeRanges.rawValue)
-        player?.currentItem?.removeObserver(self, forKeyPath: PlayerObserverKey.playbackBufferEmpty.rawValue)
-        player?.currentItem?.removeObserver(self, forKeyPath: PlayerObserverKey.playbackLikelyToKeepUp.rawValue)
-        
-        player?.removeTimeObserver(self)
-        */
+    func removeObserver() {               
         
         if let timeObserverToken = timeObserverToken {
             player?.removeTimeObserver(timeObserverToken)
@@ -287,7 +299,6 @@ class AVPlayerView: UIView {
         player = nil
         
         if avPlayerLayer != nil {
-            
             avPlayerLayer.removeFromSuperlayer()
             avPlayerLayer = nil
         }

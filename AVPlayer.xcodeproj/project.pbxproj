@@ -25,6 +25,8 @@
 		D21F2F862318C7A800F7BCF3 /* AVPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21F2F852318C7A800F7BCF3 /* AVPlayerView.swift */; };
 		D2239303233321EB00289464 /* UICollectionViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2239302233321EB00289464 /* UICollectionViewExtension.swift */; };
 		D245A00125A54E5100B8E5BC /* GlobalParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = D245A00025A54E5100B8E5BC /* GlobalParameters.swift */; };
+		D24A4A0B26142F70002BD61B /* UserDefaultData.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24A4A0A26142F70002BD61B /* UserDefaultData.swift */; };
+		D24A4A1B261457E9002BD61B /* AVPlayerIntroViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24A4A1A261457E9002BD61B /* AVPlayerIntroViewController.swift */; };
 		D2D39438231F540E00731347 /* VideoSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D39437231F540E00731347 /* VideoSource.swift */; };
 		D2D3943A231F5DDA00731347 /* MovieListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D39439231F5DDA00731347 /* MovieListViewController.swift */; };
 		D2D3943E231F5E9800731347 /* MovieListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D3943C231F5E9700731347 /* MovieListCell.swift */; };
@@ -81,6 +83,8 @@
 		D21F2F852318C7A800F7BCF3 /* AVPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVPlayerView.swift; sourceTree = "<group>"; };
 		D2239302233321EB00289464 /* UICollectionViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UICollectionViewExtension.swift; sourceTree = "<group>"; };
 		D245A00025A54E5100B8E5BC /* GlobalParameters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalParameters.swift; sourceTree = "<group>"; };
+		D24A4A0A26142F70002BD61B /* UserDefaultData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultData.swift; sourceTree = "<group>"; };
+		D24A4A1A261457E9002BD61B /* AVPlayerIntroViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVPlayerIntroViewController.swift; sourceTree = "<group>"; };
 		D2D39437231F540E00731347 /* VideoSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoSource.swift; sourceTree = "<group>"; };
 		D2D39439231F5DDA00731347 /* MovieListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieListViewController.swift; sourceTree = "<group>"; };
 		D2D3943C231F5E9700731347 /* MovieListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieListCell.swift; sourceTree = "<group>"; };
@@ -225,6 +229,7 @@
 				D2156E86231E02A30068230C /* BaseViewController.swift */,
 				D2D39439231F5DDA00731347 /* MovieListViewController.swift */,
 				D21F2F4A2318C28400F7BCF3 /* PlayerViewController.swift */,
+				D24A4A1A261457E9002BD61B /* AVPlayerIntroViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -232,9 +237,10 @@
 		D21F2F7B2318C36500F7BCF3 /* Helper */ = {
 			isa = PBXGroup;
 			children = (
-				D20F4378231CB51A00385297 /* Widget.swift */,
 				D21F2F7E2318C41100F7BCF3 /* Extension */,
+				D20F4378231CB51A00385297 /* Widget.swift */,
 				D245A00025A54E5100B8E5BC /* GlobalParameters.swift */,
+				D24A4A0A26142F70002BD61B /* UserDefaultData.swift */,
 			);
 			path = Helper;
 			sourceTree = "<group>";
@@ -490,6 +496,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D2D3943E231F5E9800731347 /* MovieListCell.swift in Sources */,
+				D24A4A1B261457E9002BD61B /* AVPlayerIntroViewController.swift in Sources */,
 				D21F2F4B2318C28400F7BCF3 /* PlayerViewController.swift in Sources */,
 				D2239303233321EB00289464 /* UICollectionViewExtension.swift in Sources */,
 				D21F2F832318C44600F7BCF3 /* PlayerControlView.swift in Sources */,
@@ -503,6 +510,7 @@
 				D2D3943A231F5DDA00731347 /* MovieListViewController.swift in Sources */,
 				D2156E87231E02A30068230C /* BaseViewController.swift in Sources */,
 				D20F4379231CB51A00385297 /* Widget.swift in Sources */,
+				D24A4A0B26142F70002BD61B /* UserDefaultData.swift in Sources */,
 				D2D39441231F79CA00731347 /* UICollectionViewCellExtension.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

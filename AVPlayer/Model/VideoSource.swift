@@ -8,6 +8,14 @@
 
 import UIKit
 
+protocol VideoDetail {
+    var description:String { get }
+    var sources:String { get }
+    var subtitle:String { get }
+    var title:String { get }
+    var fullImagePath:String { get }
+}
+
 enum VideoSourceType:Int, CaseIterable {
     case bigBuckBunny
     case elephantDream
@@ -24,7 +32,7 @@ enum VideoSourceType:Int, CaseIterable {
     case whatCareCanYouGetForAGrand
 }
 
-extension VideoSourceType {
+extension VideoSourceType: VideoDetail {
     
     var description:String {
         switch self {
@@ -243,11 +251,14 @@ extension VideoSourceType {
     }
     
     var fullImagePath:String {
+        /*
+        if self == .bigBuckBunny {
+            
+        } else {
+         
+        }
+        */
         return "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/"+thumb
-    }
-    
-    var videoPack:Video {
-        return Video.init(description: description, sources: sources, subtitle: subtitle, thumb: fullImagePath, title: title)
     }
 }
 
@@ -259,7 +270,12 @@ class VideoSource: NSObject {
         super.init()
         
         for sourceType in VideoSourceType.allCases {
-            let video = Video.init(description: sourceType.description, sources: sourceType.sources, subtitle: sourceType.subtitle, thumb: sourceType.fullImagePath, title: sourceType.title)
+            
+            let video = Video.init(description: sourceType.description,
+                                   sources: sourceType.sources,
+                                   subtitle: sourceType.subtitle,
+                                   thumb: sourceType.fullImagePath,
+                                   title: sourceType.title)
             videos.append(video)
         }
     }

@@ -10,14 +10,16 @@ import UIKit
 import AVKit
 import AVFoundation
 
-class PlayerViewController: BaseViewController, AVPlayerViewDelegate{
+class PlayerViewController: BaseViewController {
 
-    var player:AVPlayerView = AVPlayerView()
-    var playerControlView:PlayerControlView = PlayerControlView()
-    var playerCoverView:UIView = UIView()
+    var player:AVPlayerView = AVPlayerView()    //播放器影片圖層
+    var playerControlView:PlayerControlView = PlayerControlView()   //播放器控制圖層
+    var playerCoverView:UIView = UIView()       //播放器的遮罩
     let totalPadding:CGFloat = TOP_PADDING+BOTTOM_PADDING
-    var indicatorView: UIActivityIndicatorView = UIActivityIndicatorView.init(style: .whiteLarge)    
+    var indicatorView: UIActivityIndicatorView = UIActivityIndicatorView.init(style: .whiteLarge)
+    var timeShift:Int = 5
     
+    @IBOutlet weak var infoButton: UIButton!
     @IBOutlet weak var backButton: UIButton!
     
     var isLandscape:Bool {
@@ -34,11 +36,20 @@ class PlayerViewController: BaseViewController, AVPlayerViewDelegate{
         
         indicatorView.startAnimating()
         indicatorView.center = view.center
-        view.addSubview(indicatorView)
+        view.addSubview(indicatorView)                
+        
+        DispatchQueue.main.async {
+            self.setplayer()
+            self.setTapGestures()
+            self.displayControlIntro()
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        
+    
+    }
+    
+    private func setplayer() {
         let width = view.frame.size.width
         let height = width/16*9
         
@@ -58,8 +69,6 @@ class PlayerViewController: BaseViewController, AVPlayerViewDelegate{
         playerControlView.delegate = self
         player.addSubview(playerControlView)
         player.bringSubviewToFront(playerControlView)
-        
-        setTapGestures()
     }
     
     private func initPlayerCoverView() {
@@ -94,19 +103,41 @@ class PlayerViewController: BaseViewController, AVPlayerViewDelegate{
         playerControlSingleTap.require(toFail: playerControlDoubleTap)
     }
 
-    @objc func playerSingleTapAction () {
+    private func displayControlIntro(force:Bool=false) {
+                
+        let main = UIStoryboard.init(name: "Main", bundle: nil)
+        
+        if let avPlayerIntroViewController = main.instantiateViewController(withIdentifier: "AVPlayerIntroViewController") as? AVPlayerIntroViewController  {
+            
+            avPlayerIntroViewController.modalPresentationStyle = .fullScreen
+            
+            let hasOpened = UserDefaultData.getHasOpened() ?? false
+            
+            if force {
+                player.pause()
+                present(avPlayerIntroViewController, animated: true, completion: nil)
+            } else {
+                if !hasOpened {
+                    player.pause()
+                    present(avPlayerIntroViewController, animated: true, completion: nil)
+                }
+            }
+        }
+    }
+    
+    @objc private func playerSingleTapAction () {
         playerControlView.show()
     }
     
-    @objc func playerDoubleTapAction (sender:UITapGestureRecognizer) {
+    @objc private func playerDoubleTapAction (sender:UITapGestureRecognizer) {
         doubleTapAction(sender: sender)
     }
     
-    @objc func playerControlSingleTapAction () {
+    @objc private func playerControlSingleTapAction () {
         playerControlView.hide()
     }
     
-    @objc func playerControlDoubleTapAction (sender:UITapGestureRecognizer) {
+    @objc private func playerControlDoubleTapAction (sender:UITapGestureRecognizer) {
         doubleTapAction(sender: sender)
     }
     
@@ -114,10 +145,10 @@ class PlayerViewController: BaseViewController, AVPlayerViewDelegate{
         let point = sender.location(in: view)
         if point.x > view.frame.size.width/2 {
             WaveView.waveAnimate(view: player, position: CGPoint.init(x: player.frame.size.width/4*3, y: player.frame.size.height/2))
-            player.fastForward()
+            player.fastForward(shiftTime: timeShift)
         } else {
             WaveView.waveAnimate(view: player, position: CGPoint.init(x: player.frame.size.width/4, y: player.frame.size.height/2))
-            player.rewind()
+            player.rewind(shiftTime: timeShift)
         }
     }
     
@@ -154,61 +185,129 @@ class PlayerViewController: BaseViewController, AVPlayerViewDelegate{
         playerControlView.setOrientationButtonImage(isLandscape: isLandscape)
     }
     
-    //MARK: ----- AVPlayerViewDelegate -----
-    func playerDidReceiveFail(_ player:AVPlayerView) {
-        presentAlert(title: "讀取失敗", message: nil, alertType: .normal, handler: nil)
+    @IBAction func backAction(_ sender: Any) {
+        player.removeObserver()
+        dismiss(animated: true, completion: nil)
     }
     
-    func didUpdatePlayerCurrentTime(_ player:AVPlayerView, time: Float64) {
-        playerControlView.updateCurrentTime(time: time)
-    }
-    
-    func playerBufferProgress(_ player:AVPlayerView, currentTime: Float64, totalTime: Float64) {
-        playerControlView.setProcessViewValue(current: currentTime, total: totalTime)
-    }
-    
-    func playerDidFinishPlaying(_ player:AVPlayerView) {
-        playerControlView.show()
-        playerControlView.setReplayButton()
-        print("finish")
-    }
-    
-    func playerPlaybackBufferEmpty(_ player: AVPlayerView) {
-        playerControlView.setIndicator(isLoading: true)
-    }
-    
-    func playerPlaybackLikelyToKeepUp(_ player: AVPlayerView) {
-        playerControlView.setIndicator(isLoading: false)
-    }
-    
-    func playerPlayAndPause(_ player:AVPlayerView, isPlaying: Bool) {
+    private func setPlayControlView(isPlaying: Bool) {
         print("isPlaying",isPlaying)
         playerControlView.setPlayButton(isPlaying: isPlaying)
         playerControlView.setIndicator(isLoading: false)
     }
     
-    func didReceiveTotalDuration(_ player:AVPlayerView, time: Float64) {
-        print("didReceiveTotalDuration",time)
-        playerControlView.setTotalTime(time: time)
-    }
-    
-    func didTouchPlayer(_ player:AVPlayerView) {
-        playerControlView.show()
-    }
-    
-    func didRewindOrFastforward(_ player:AVPlayerView) {
-        player.play()
-    }
-    
-    @IBAction func backAction(_ sender: Any) {
-        player.removeObserver()
-        dismiss(animated: true, completion: nil)
+    @IBAction func infoAction(_ sender: Any) {
+        displayControlIntro(force: true)
     }
     
     deinit {
         print("deinit")
         player.removeFromSuperview()
     }
+}
+
+//MARK: ----- AVPlayerViewDelegate -----
+extension PlayerViewController: AVPlayerViewDelegate {
+    
+    func playerLoadStatus(_ player: AVPlayerView, status: AVPlayerView.PlayeLoadStatus) {
+        switch status {
+        case .ready:
+            player.play()
+            break
+            
+        case .fail:
+            player.pause()
+            presentAlert(title: "讀取失敗", message: nil, alertType: .normal, handler: nil)
+            break
+        
+        }
+    }
+
+    func didUpdatePlayerCurrentTime(_ player:AVPlayerView, time: Float64) {
+        playerControlView.updateCurrentTime(time: time)
+    }
+
+    func playerBufferProgress(_ player:AVPlayerView, currentTime: Float64, totalTime: Float64) {
+        playerControlView.setProcessViewValue(current: currentTime, total: totalTime)
+    }
+
+    
+    func playbackLikelyToKeepUp(_ player: AVPlayerView, keepUp: Bool) {
+        playerControlView.setIndicator(isLoading: !keepUp)
+    }
+    
+    func playerPlayStatusDidChange(_ player: AVPlayerView, status: AVPlayerView.PlayerPlayStatus) {
+        switch status {
+        case .play:
+            setPlayControlView(isPlaying: true)
+            break
+            
+        case .pause:
+            setPlayControlView(isPlaying: false)
+            break
+            
+        case .replay:
+            break
+            
+        case .finish:
+            playerControlView.show()
+            playerControlView.setReplayButton()
+            print("finish")
+            break
+            
+        case .rewind:
+            player.play()
+            break
+            
+        case .fastForward:
+            player.play()
+            break
+        }
+    }
+    /*
+    func playerDidFinishPlaying(_ player:AVPlayerView) {
+        playerControlView.show()
+        playerControlView.setReplayButton()
+        print("finish")
+    }
+    */
+    
+    /*
+    func playerPlaybackBufferEmpty(_ player: AVPlayerView) {
+        playerControlView.setIndicator(isLoading: true)
+    }
+     */
+    
+    /*
+    func playerPlaybackLikelyToKeepUp(_ player: AVPlayerView) {
+        playerControlView.setIndicator(isLoading: false)
+    }
+     */
+    
+    /*
+    func playerPlayAndPause(_ player:AVPlayerView, isPlaying: Bool) {
+        print("isPlaying",isPlaying)
+        playerControlView.setPlayButton(isPlaying: isPlaying)
+        playerControlView.setIndicator(isLoading: false)
+    }
+     */
+    
+    func didReceiveTotalDuration(_ player:AVPlayerView, time: Float64) {
+        print("didReceiveTotalDuration",time)
+        playerControlView.setTotalTime(time: time)
+    }
+
+    /*
+    func didTouchPlayer(_ player:AVPlayerView) {
+        playerControlView.show()
+    }
+    */
+    
+    /*
+    func didRewindOrFastforward(_ player:AVPlayerView) {
+        player.play()
+    }
+    */
 }
 
 //MARK: - PlayerControlViewDelegate
@@ -230,11 +329,11 @@ extension PlayerViewController: PlayerControlViewDelegate {
             break
             
         case .fastforward:
-            player.fastForward()
+            player.fastForward(shiftTime: timeShift)
             break
             
         case .rewind:
-            player.rewind()
+            player.rewind(shiftTime: timeShift)
             break
             
         case .playerControlViewEndChangeSliderValue:

@@ -21,6 +21,14 @@ class MovieListViewController: BaseViewController {
 
         // Do any additional setup after loading the view.
         
+        initListCollectionView()
+
+        data = VideoSource().getVideos()
+
+        AppDelegate.AppUtility.lockOrientation(.portrait)
+    }
+    
+    private func initListCollectionView() {
         let cellNib = UINib.init(nibName: identifierName, bundle: nil)
         listCollectionView.register(cellNib, forCellWithReuseIdentifier: identifierName)
         
@@ -31,10 +39,6 @@ class MovieListViewController: BaseViewController {
         let height:CGFloat = width*0.76142132
         
         flowLayout.estimatedItemSize = CGSize(width: width, height: height)
-
-        data = VideoSource().getVideos()
-
-        AppDelegate.AppUtility.lockOrientation(.portrait)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -45,7 +49,7 @@ class MovieListViewController: BaseViewController {
         listCollectionView.reloadData()
     }
     
-    func presentPlayerController(video:Video) {
+    private func presentPlayerController(video:Video) {
         
         let stroyboard = UIStoryboard.init(name: "Main", bundle: nil)
         
