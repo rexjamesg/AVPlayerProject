@@ -162,10 +162,11 @@ class PlayerViewController: BaseViewController {
         }
         
         if isLandscape {
+            
             print("Landscape")
-            player.frame = CGRect.init(x: 0, y: 0, width: height, height: width)
+            player.frame = CGRect.init(x: view.frame.size.height/2-height/2, y: view.frame.size.width/2-width/2, width: height, height: width)
             playerCoverView.frame = CGRect.init(x: 0, y: 0, width: height, height: width)
-            playerControlView.frame = CGRect.init(x: 0, y: 0, width: height-TOP_PADDING, height: width-BOTTOM_PADDING)
+            playerControlView.frame = CGRect.init(x: 0, y: 0, width: height, height: width)
             playerControlView.center = player.center
         } else {
             print("Portrait")

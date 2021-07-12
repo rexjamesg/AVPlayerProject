@@ -105,7 +105,16 @@ class AVPlayerView: UIView {
         
         return nil
     }
-    
+    /*
+    var videoSize:CGSize {
+        if let item = player?.currentItem {
+            return item.presentationSize
+        } else {
+            return .zero
+        }
+    }
+    */
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         
@@ -149,6 +158,7 @@ class AVPlayerView: UIView {
             //緩衝足夠，手動播放
             player?.currentItem?.addObserver(self, forKeyPath: PlayerObserverKey.playbackLikelyToKeepUp.rawValue, options: .new, context: nil)
         }
+                
     }
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
