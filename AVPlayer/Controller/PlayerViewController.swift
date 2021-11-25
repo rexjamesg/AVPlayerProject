@@ -45,10 +45,7 @@ class PlayerViewController: BaseViewController {
         }
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-    
-    }
-    
+    ///設定播放器
     private func setplayer() {
         let width = view.frame.size.width
         let height = width/16*9
@@ -78,6 +75,7 @@ class PlayerViewController: BaseViewController {
         player.addSubview(playerCoverView)
     }
     
+    ///設定播放器手勢
     private func setTapGestures() {
         
         //player
@@ -144,10 +142,10 @@ class PlayerViewController: BaseViewController {
     private func doubleTapAction(sender:UITapGestureRecognizer) {
         let point = sender.location(in: view)
         if point.x > view.frame.size.width/2 {
-            WaveView.waveAnimate(view: player, position: CGPoint.init(x: player.frame.size.width/4*3, y: player.frame.size.height/2))
+            player.waveAnimate(position: CGPoint.init(x: player.frame.size.width/4*3, y: player.frame.size.height/2), size:CGSize.init(width: player.frame.size.width, height: player.frame.size.height))
             player.fastForward(shiftTime: timeShift)
         } else {
-            WaveView.waveAnimate(view: player, position: CGPoint.init(x: player.frame.size.width/4, y: player.frame.size.height/2))
+            player.waveAnimate(position: CGPoint.init(x: player.frame.size.width/4, y: player.frame.size.height/2), size:CGSize.init(width: player.frame.size.width, height: player.frame.size.height))
             player.rewind(shiftTime: timeShift)
         }
     }
@@ -265,50 +263,11 @@ extension PlayerViewController: AVPlayerViewDelegate {
             break
         }
     }
-    /*
-    func playerDidFinishPlaying(_ player:AVPlayerView) {
-        playerControlView.show()
-        playerControlView.setReplayButton()
-        print("finish")
-    }
-    */
-    
-    /*
-    func playerPlaybackBufferEmpty(_ player: AVPlayerView) {
-        playerControlView.setIndicator(isLoading: true)
-    }
-     */
-    
-    /*
-    func playerPlaybackLikelyToKeepUp(_ player: AVPlayerView) {
-        playerControlView.setIndicator(isLoading: false)
-    }
-     */
-    
-    /*
-    func playerPlayAndPause(_ player:AVPlayerView, isPlaying: Bool) {
-        print("isPlaying",isPlaying)
-        playerControlView.setPlayButton(isPlaying: isPlaying)
-        playerControlView.setIndicator(isLoading: false)
-    }
-     */
-    
+  
     func didReceiveTotalDuration(_ player:AVPlayerView, time: Float64) {
         print("didReceiveTotalDuration",time)
         playerControlView.setTotalTime(time: time)
     }
-
-    /*
-    func didTouchPlayer(_ player:AVPlayerView) {
-        playerControlView.show()
-    }
-    */
-    
-    /*
-    func didRewindOrFastforward(_ player:AVPlayerView) {
-        player.play()
-    }
-    */
 }
 
 //MARK: - PlayerControlViewDelegate

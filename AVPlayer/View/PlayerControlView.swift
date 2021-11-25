@@ -8,8 +8,7 @@
 
 import UIKit
 
-protocol PlayerControlViewDelegate:class {
-    
+protocol PlayerControlViewDelegate {
     /**
      滑桿變更影片目前時間
      - Parameter value:變更的時間
@@ -55,7 +54,7 @@ class PlayerControlView: UIView {
         case fullScreenExit = "baseline_fullscreen_exit_white"
     }
 
-    weak var delegate:PlayerControlViewDelegate?
+    var delegate:PlayerControlViewDelegate?
     
     @IBOutlet weak var playButton: UIButton!
     @IBOutlet weak var forwardButton: UIButton!

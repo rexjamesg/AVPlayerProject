@@ -10,7 +10,7 @@ import UIKit
 import AVKit
 import AVFoundation
 
-protocol AVPlayerViewDelegate:class {
+protocol AVPlayerViewDelegate {
     
     /**
      播放器讀取狀態
@@ -80,7 +80,7 @@ class AVPlayerView: UIView {
     }
     
     ///代理
-    weak var delegate:AVPlayerViewDelegate?
+    var delegate:AVPlayerViewDelegate?
     
     ///播放器
     var player : AVPlayer?

@@ -22,22 +22,13 @@ class WaveView: UIView, CAAnimationDelegate {
         
     }
     
-    class func waveAnimate(view:UIView, position:CGPoint) {
-        
-        let waveView = WaveView.init(frame: CGRect.init(x: position.x, y: position.y, width: view.frame.size.width, height: view.frame.size.width))
-        
-        view.addSubview(waveView)
-        
-        waveView.createPulse()
-    }
-    
-    private func createPulse() {
+    func createPulse(color:UIColor) {
         
         let circularPath = UIBezierPath(arcCenter: .zero, radius: self.frame.size.width/2.0, startAngle: 0, endAngle: 2 * .pi, clockwise: true)
         
         pulseLayer.path = circularPath.cgPath
         pulseLayer.lineWidth = 2.0
-        pulseLayer.fillColor = UIColor.white.cgColor
+        pulseLayer.fillColor = color.cgColor
         pulseLayer.lineCap = CAShapeLayerLineCap.round
         pulseLayer.position = CGPoint(x: 0, y: 0)
         self.layer.addSublayer(pulseLayer)
@@ -92,4 +83,13 @@ class WaveView: UIView, CAAnimationDelegate {
     }
     */
 
+}
+
+extension UIView {
+    
+    func waveAnimate(position:CGPoint, size:CGSize=CGSize.init(width: 50, height: 50), color:UIColor=UIColor.white) {
+        let waveView = WaveView.init(frame: CGRect.init(x: position.x, y: position.y, width: size.width, height: size.width))
+        self.addSubview(waveView)
+        waveView.createPulse(color: color)
+    }
 }
